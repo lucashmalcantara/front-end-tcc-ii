@@ -4,13 +4,17 @@ import { fonts } from "../../../styles/index";
 const styles = StyleSheet.create({
   cardBody: {
     alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  cardItemContainer: {
+    alignItems: "center",
   },
   ticketNumber: {
-    fontSize: fonts.huge,
-    fontWeight: 'bold'
+    fontSize: fonts.big,
   },
-  ticketIssueDate: {
-    fontSize: fonts.medium,
+  calledAt: {
+    fontSize: fonts.small,
   },
 });
 

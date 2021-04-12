@@ -11,12 +11,16 @@ import {
 
 import styles from "./styles";
 import Ticket from "./Ticket";
+import FollowUp from "./FollowUp";
+import CalledTickets from "./CalledTickets";
 
 export default function TabTicketFollowUp() {
   return (
     <Container>
       <Content padder>
-      <Ticket name=""></Ticket>
+      <Ticket name=""/>
+      <FollowUp name=""/>
+      <CalledTickets name=""/>
       </Content>
     </Container>
   );
