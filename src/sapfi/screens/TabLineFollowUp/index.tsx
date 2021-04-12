@@ -1,14 +1,31 @@
-import * as React from 'react';
+import React, { Component } from "react";
 import styles from "./styles";
-
-import EditScreenInfo from '../../components/EditScreenInfo';
-import { Text, View } from '../../components/Themed';
+import { Container, Header, Content, Card, CardItem, Text, Body } from "native-base";
 
 export default function TabLineFollowUp() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Acompanhar situação da fila</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-    </View>
+    <Container>
+    <Content padder>
+      <Card>
+        <CardItem header bordered>
+          <Text>NativeBase</Text>
+        </CardItem>
+        <CardItem bordered>
+          <Body>
+            <Text>
+              NativeBase is a free and open source framework that enable
+              developers to build
+              high-quality mobile apps using React Native iOS and Android
+              apps
+              with a fusion of ES6.
+            </Text>
+          </Body>
+        </CardItem>
+        <CardItem footer bordered>
+          <Text>GeekyAnts</Text>
+        </CardItem>
+      </Card>
+    </Content>
+  </Container>
   );
 }

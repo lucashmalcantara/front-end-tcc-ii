@@ -1,8 +1,10 @@
-import metrics from './metrics';
-import colors from './colors';
-import fonts from './fonts';
+import metrics from "./metrics";
+import colors from "./colors";
+import fonts from "./fonts";
 
-const general = {
+import { StyleSheet } from "react-native";
+
+const general = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -12,11 +14,11 @@ const general = {
   },
   sectionTitle: {
     color: colors.text,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: fonts.regular,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: metrics.doubleBaseMargin,
   },
-};
+});
 
 export default general;

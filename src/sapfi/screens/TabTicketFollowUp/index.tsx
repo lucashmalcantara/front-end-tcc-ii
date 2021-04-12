@@ -1,14 +1,23 @@
-import * as React from 'react';
-import styles from "./styles";
+import React, { Component } from "react";
+import {
+  Container,
+  Header,
+  Content,
+  Card,
+  CardItem,
+  Text,
+  Body,
+} from "native-base";
 
-import EditScreenInfo from '../../components/EditScreenInfo';
-import { Text, View } from '../../components/Themed';
+import styles from "./styles";
+import Ticket from "./Ticket";
 
 export default function TabTicketFollowUp() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Acompanhar pedido</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-    </View>
+    <Container>
+      <Content padder>
+      <Ticket name=""></Ticket>
+      </Content>
+    </Container>
   );
 }
