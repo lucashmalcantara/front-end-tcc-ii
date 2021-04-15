@@ -19,6 +19,9 @@ const general = StyleSheet.create({
     alignSelf: "center",
     marginBottom: metrics.doubleBaseMargin,
   },
+  baseMarginTop: {
+    marginTop: metrics.baseMargin,
+  },
 });
 
 export default general;

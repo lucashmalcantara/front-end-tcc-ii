@@ -3,9 +3,9 @@ import { Dimensions, Platform } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
 const metrics = {
-  smallMargin: 5,
-  baseMargin: 10,
-  doubleBaseMargin: 20,
+  smallMargin: 8,
+  baseMargin: 16,
+  doubleBaseMargin: 32,
   screenWidth: width < height ? width : height,
   screenHeight: width < height ? height : width,
   tabBarHeight: 54,
