@@ -27,6 +27,8 @@ import * as Notifications from "expo-notifications";
 import React, { useState, useEffect, useRef } from "react";
 import { Text, View, Button, Platform } from "react-native";
 import { Subscription } from "@unimodules/core";
+import { colors } from "./styles";
+import { Alert } from "react-native";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -37,7 +39,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
-  const [expoPushToken, setExpoPushToken] = useState("");
+  const [expoPushToken, setExpoPushToken] = useState<string>("");
   const [
     notification,
     setNotification,
@@ -47,7 +49,7 @@ export default function App() {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token as string)
+      setExpoPushToken(token)
     );
 
     // This listener is fired whenever a notification is received while the app is foregrounded
@@ -125,34 +127,43 @@ async function sendPushNotification(expoPushToken: string) {
 }
 
 async function registerForPushNotificationsAsync() {
-  let token;
-  if (Constants.isDevice) {
-    const {
-      status: existingStatus,
-    } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
-  } else {
-    alert("Must use physical device for Push Notifications");
+  if (!Constants.isDevice) {
+    Alert.alert(
+      "Erro ao configurar Push Notifications",
+      "Deve ser usado um dispositivo físico para Push Notifications"
+    );
+    return "";
   }
+
+  const allowNotifications = await getNotificationPermissionStatus();
+
+  if (!allowNotifications) {
+    return "";
+  }
+
+  let token = (await Notifications.getExpoPushTokenAsync()).data;
+  console.log(token);
 
   if (Platform.OS === "android") {
     Notifications.setNotificationChannelAsync("default", {
       name: "default",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
+      lightColor: colors.primary,
     });
   }
 
   return token;
+}
+
+async function getNotificationPermissionStatus() {
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+
+  let finalStatus = existingStatus;
+  if (existingStatus !== "granted") {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+
+  return finalStatus === "granted";
 }
