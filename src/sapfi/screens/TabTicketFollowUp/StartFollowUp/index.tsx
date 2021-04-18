@@ -24,7 +24,7 @@ const StartFollowUp: React.FC<Props> = ({ name }) => {
       </View>
       <Form>
         <Item floatingLabel>
-          <Label>Código do restaurante</Label>
+          <Label>Código do estabelecimento</Label>
           <Input />
         </Item>
         <Item floatingLabel>
