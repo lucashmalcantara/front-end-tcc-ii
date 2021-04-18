@@ -1,15 +1,7 @@
 import React, { useState } from "react";
 import styles from "./styles";
 import SapfiApi from "../../../services/Sapfi/Api";
-import {
-  Form,
-  Item,
-  Input,
-  Label,
-  Button,
-  Text,
-  View,
-} from "native-base";
+import { Form, Item, Input, Label, Button, Text, View } from "native-base";
 import GetTicketModel from "../../../services/Sapfi/Models/Ticket/Get/GetTicketModel";
 import { Alert } from "react-native";
 import ErrorModel from "../../../services/Sapfi/Models/Core/ErrorModel";
@@ -19,8 +11,10 @@ export interface Props {
 }
 
 const StartFollowUp: React.FC<Props> = ({ handleTicket }) => {
-  const [friendlyHumanCompanyCode, setFriendlyHumanCompanyCode] = useState("");
-  const [ticketNumber, setTicketNumber] = useState("");
+  const [friendlyHumanCompanyCode, setFriendlyHumanCompanyCode] = useState(
+    "ABCD"
+  ); //TODO just for tests
+  const [ticketNumber, setTicketNumber] = useState("ABC123"); //TODO just for tests
 
   const getTicket = async (
     friendlyHumanCompanyCode: string,
@@ -32,11 +26,13 @@ const StartFollowUp: React.FC<Props> = ({ handleTicket }) => {
         number,
       },
     })
-      .then(
-        (response) =>
-          handleTicket(
-            response.status === 204 ? undefined : response.data
-          )
+      .then((response) =>
+        response.status === 204
+          ? Alert.alert(
+              "Ticket não encontrado",
+              "Verifique os dados inseridos e tente novamente!"
+            )
+          : handleTicket(response.data)
       )
       .catch((error) => {
         let errorModel: ErrorModel = error.response.data;

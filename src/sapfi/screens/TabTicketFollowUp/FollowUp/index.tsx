@@ -13,10 +13,11 @@ import {
 } from "native-base";
 
 export interface Props {
-  name: string;
+  linePosition: number;
+  waitingTime: number;
 }
 
-const FollowUp: React.FC<Props> = ({ name }) => {
+const FollowUp: React.FC<Props> = ({ linePosition, waitingTime }) => {
   return (
     <Card>
       <CardItem header bordered>
@@ -26,11 +27,11 @@ const FollowUp: React.FC<Props> = ({ name }) => {
         <Body style={styles.cardBody}>
           <View>
             <Text style={styles.ticketIssueDate}>Posição na fila</Text>
-            <Text style={styles.ticketNumber}>6</Text>
+            <Text style={styles.ticketNumber}>{linePosition}</Text>
           </View>
           <View>
             <Text style={styles.ticketIssueDate}>Estimativa atendimento</Text>
-            <Text style={styles.ticketNumber}>15m</Text>
+            <Text style={styles.ticketNumber}>{waitingTime}m</Text>
           </View>
         </Body>
       </CardItem>

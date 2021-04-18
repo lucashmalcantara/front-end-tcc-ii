@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { fonts } from "../../../styles/index";
+import {  fonts } from "../../../styles/index";
 
 const styles = StyleSheet.create({
   cardBody: {

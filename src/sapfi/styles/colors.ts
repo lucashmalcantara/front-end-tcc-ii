@@ -1,6 +1,6 @@
 const colors = {
   header: "#333333",
-  primary: "#069",
+  primary: "#3F51B5",
   background: "#fff",
   text: "#000",
 };

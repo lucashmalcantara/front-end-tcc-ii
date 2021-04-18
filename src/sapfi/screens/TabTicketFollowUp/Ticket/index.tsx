@@ -13,11 +13,11 @@ import {
 } from "native-base";
 
 export interface Props {
-  ticketNumber: string;
-  ticketIssueDate: Date;
+  number: string;
+  issueDate: Date;
 }
 
-const Ticket: React.FC<Props> = ({ ticketNumber, ticketIssueDate }) => {
+const Ticket: React.FC<Props> = ({ number, issueDate }) => {
   return (
     <Card>
       <CardItem header bordered>
@@ -25,8 +25,8 @@ const Ticket: React.FC<Props> = ({ ticketNumber, ticketIssueDate }) => {
       </CardItem>
       <CardItem bordered>
         <Body style={styles.cardBody}>
-          <Text style={styles.ticketNumber}>{ticketNumber}</Text>
-          <Text style={styles.ticketIssueDate}>Data emissão: {moment(ticketIssueDate).format('DD/MM HH:mm')}</Text>
+          <Text style={styles.ticketNumber}>{number}</Text>
+          <Text style={styles.ticketIssueDate}>Data emissão: {moment(issueDate).format('DD/MM HH:mm')}</Text>
         </Body>
       </CardItem>
     </Card>
