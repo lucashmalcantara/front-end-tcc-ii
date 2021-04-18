@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import styles from './styles';
+import styles from "./styles";
+import moment from "moment";
 
 import {
   Container,
@@ -12,19 +13,20 @@ import {
 } from "native-base";
 
 export interface Props {
-  name: string;
+  ticketNumber: string;
+  ticketIssueDate: Date;
 }
 
-const Ticket: React.FC<Props> = ({ name }) => {
+const Ticket: React.FC<Props> = ({ ticketNumber, ticketIssueDate }) => {
   return (
     <Card>
       <CardItem header bordered>
-        <Text>Sua senha</Text>
+        <Text>Seu ticket</Text>
       </CardItem>
       <CardItem bordered>
         <Body style={styles.cardBody}>
-          <Text style={styles.ticketNumber}>A020</Text>
-          <Text style={styles.ticketIssueDate}>11/04/2021 20:56</Text>
+          <Text style={styles.ticketNumber}>{ticketNumber}</Text>
+          <Text style={styles.ticketIssueDate}>Data emissão: {moment(ticketIssueDate).format('DD/MM HH:mm')}</Text>
         </Body>
       </CardItem>
     </Card>

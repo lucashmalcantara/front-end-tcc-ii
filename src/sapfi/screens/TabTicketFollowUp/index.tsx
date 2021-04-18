@@ -56,7 +56,10 @@ export default function TabTicketFollowUp() {
         </Content>
       ) : (
         <Content padder>
-          <Ticket name="" />
+          <Ticket
+            ticketNumber={ticket.number}
+            ticketIssueDate={ticket.issueDate}
+          />
           <FollowUp name="" />
           <CalledTickets name="" />
         </Content>
