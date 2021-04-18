@@ -18,9 +18,11 @@ import CalledTickets from "./CalledTickets";
 import StartFollowUp from "./StartFollowUp";
 import * as Font from "expo-font";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import GetTicketModel from "../../services/Sapfi/Models/Ticket/Get/GetTicketModel";
 
 export default function TabTicketFollowUp() {
   const [isReady, setIsReady] = useState(false);
+  const [ticket, setTicket] = useState<GetTicketModel>();
 
   useEffect(() => {
     loadNativeBaseFonts();
@@ -36,19 +38,29 @@ export default function TabTicketFollowUp() {
     setIsReady(true);
   };
 
+  const handleTicket = (ticket: GetTicketModel) => {
+    console.log(">>> handleTicket = (ticket: GetTicketModel)");
+    console.log(ticket);
+    setTicket(ticket);
+  };
+
   return !isReady ? (
     <Label>Loading...</Label>
   ) : (
     <Container>
-      <Content padder>
-        <View style={styles.containerStartFollowUp}>
-          <StartFollowUp name="" />
-        </View>
-
-        {/* <Ticket name=""/>
-      <FollowUp name=""/>
-      <CalledTickets name=""/> */}
-      </Content>
+      {!ticket ? (
+        <Content padder>
+          <View style={styles.containerStartFollowUp}>
+            <StartFollowUp handleTicket={handleTicket} />
+          </View>
+        </Content>
+      ) : (
+        <Content padder>
+          <Ticket name="" />
+          <FollowUp name="" />
+          <CalledTickets name="" />
+        </Content>
+      )}
     </Container>
   );
 }

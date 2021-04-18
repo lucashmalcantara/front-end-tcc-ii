@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import styles from "./styles";
-
+import SapfiApi from "../../../services/Sapfi/Api";
 import {
   Form,
   Item,
@@ -8,15 +8,42 @@ import {
   Label,
   Button,
   Text,
-  Content,
   View,
 } from "native-base";
+import GetTicketModel from "../../../services/Sapfi/Models/Ticket/Get/GetTicketModel";
+import { Alert } from "react-native";
+import ErrorModel from "../../../services/Sapfi/Models/Core/ErrorModel";
 
 export interface Props {
-  name: string;
+  handleTicket: Function;
 }
 
-const StartFollowUp: React.FC<Props> = ({ name }) => {
+const StartFollowUp: React.FC<Props> = ({ handleTicket }) => {
+  const [friendlyHumanCompanyCode, setFriendlyHumanCompanyCode] = useState("");
+  const [ticketNumber, setTicketNumber] = useState("");
+
+  const getTicket = async (
+    friendlyHumanCompanyCode: string,
+    number: string
+  ) => {
+    SapfiApi.get<GetTicketModel>("/v1/Tickets", {
+      params: {
+        friendlyHumanCompanyCode,
+        number,
+      },
+    })
+      .then(
+        (response) =>
+          handleTicket(
+            response.status === 204 ? undefined : response.data
+          )
+      )
+      .catch((error) => {
+        let errorModel: ErrorModel = error.response.data;
+        Alert.alert(errorModel.title, errorModel.message);
+      });
+  };
+
   return (
     <View>
       <View style={styles.containerStartProcess}>
@@ -25,13 +52,26 @@ const StartFollowUp: React.FC<Props> = ({ name }) => {
       <Form>
         <Item floatingLabel>
           <Label>Código do estabelecimento</Label>
-          <Input />
+          <Input
+            autoCapitalize="characters"
+            value={friendlyHumanCompanyCode}
+            onChangeText={(value) => setFriendlyHumanCompanyCode(value)}
+          />
         </Item>
         <Item floatingLabel>
           <Label>Número do ticket</Label>
-          <Input />
+          <Input
+            autoCapitalize="characters"
+            value={ticketNumber}
+            onChangeText={(value) => setTicketNumber(value)}
+          />
         </Item>
-        <Button block primary style={styles.baseMarginTop}>
+        <Button
+          block
+          primary
+          style={styles.baseMarginTop}
+          onPress={() => getTicket(friendlyHumanCompanyCode, ticketNumber)}
+        >
           <Text>Iniciar</Text>
         </Button>
       </Form>
