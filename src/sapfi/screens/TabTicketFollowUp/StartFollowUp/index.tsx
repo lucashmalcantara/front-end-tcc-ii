@@ -5,6 +5,7 @@ import { Form, Item, Input, Label, Button, Text, View } from "native-base";
 import GetTicketModel from "../../../services/Sapfi/Models/Ticket/Get/GetTicketModel";
 import { Alert } from "react-native";
 import ErrorModel from "../../../services/Sapfi/Models/Core/ErrorModel";
+import { errorToast } from "../../../components/Toast";
 
 export interface Props {
   handleTicket: Function;
@@ -35,8 +36,12 @@ const StartFollowUp: React.FC<Props> = ({ handleTicket }) => {
           : handleTicket(response.data)
       )
       .catch((error) => {
+        if (!error.response) {
+          errorToast(error.toString());
+          return;
+        }
         let errorModel: ErrorModel = error.response.data;
-        Alert.alert(errorModel.title, errorModel.message);
+        errorToast(errorModel.message);
       });
   };
 

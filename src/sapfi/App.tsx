@@ -8,6 +8,7 @@ import Navigation from "./navigation";
 import React from "react";
 
 import { UserProvider } from "./contexts/User";
+import { Root } from "native-base";
 
 export default function App() {
   const isReady = useCachedResources();
@@ -17,12 +18,14 @@ export default function App() {
     return null;
   } else {
     return (
-      <SafeAreaProvider>
-        <UserProvider>
-          <Navigation colorScheme={colorScheme} />
-          <StatusBar />
-        </UserProvider>
-      </SafeAreaProvider>
+      <Root>
+        <SafeAreaProvider>
+          <UserProvider>
+            <Navigation colorScheme={colorScheme} />
+            <StatusBar />
+          </UserProvider>
+        </SafeAreaProvider>
+      </Root>
     );
   }
 }

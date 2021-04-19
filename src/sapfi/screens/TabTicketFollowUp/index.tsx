@@ -21,7 +21,7 @@ export default function TabTicketFollowUp() {
 
   useEffect(() => {
     loadNativeBaseFonts();
-    console.log("TabTicketFollowUp expoPushToken: ",expoPushToken);
+    console.log("expoPushToken: ",expoPushToken);
   }, []);
 
   const loadNativeBaseFonts = async () => {

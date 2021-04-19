@@ -39,7 +39,6 @@ export const UserProvider: React.FC = ({ children }) => {
     notificationListener.current = Notifications.addNotificationReceivedListener(
       (notification) => {
         setNotification(notification);
-        console.log("Received notification: ", notification);
       }
     );
 

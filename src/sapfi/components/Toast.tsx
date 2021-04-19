@@ -3,15 +3,17 @@ import { Toast } from "native-base";
 export const successToast = (text: string, buttonText?: string) =>
   Toast.show({
     text: text,
-    buttonText: buttonText,
-    textStyle: { color: "green" },
+    buttonText: buttonText ?? "OK",
+    type: "success",
     position: "bottom",
+    duration: 3000,
   });
 
 export const errorToast = (text: string, buttonText?: string) =>
   Toast.show({
     text: text,
-    buttonText: buttonText,
-    textStyle: { color: "red" },
+    buttonText: buttonText ?? "OK",
+    type: "danger",
     position: "bottom",
+    duration: 3000,
   });
