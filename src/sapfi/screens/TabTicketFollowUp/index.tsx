@@ -1,5 +1,5 @@
-import React, { Component, useState, useEffect } from "react";
-import { Container, Content, View, Label, Spinner } from "native-base";
+import React, { Component, useState, useEffect, useContext } from "react";
+import { Container, Content, View, Label, Spinner, Toast } from "native-base";
 
 import styles from "./styles";
 import Ticket from "./Ticket";
@@ -10,13 +10,18 @@ import * as Font from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
 import GetTicketModel from "../../services/Sapfi/Models/Ticket/Get/GetTicketModel";
 import { colors } from "../../styles";
+import UserContext from "../../contexts/User";
+import SapfiApi from "../../services/Sapfi/Api";
+import { errorToast, successToast } from "../../components/Toast";
 
 export default function TabTicketFollowUp() {
+  const { expoPushToken } = useContext(UserContext);
   const [isReady, setIsReady] = useState(false);
   const [ticket, setTicket] = useState<GetTicketModel>();
 
   useEffect(() => {
     loadNativeBaseFonts();
+    console.log("TabTicketFollowUp expoPushToken: ",expoPushToken);
   }, []);
 
   const loadNativeBaseFonts = async () => {
@@ -29,7 +34,23 @@ export default function TabTicketFollowUp() {
     setIsReady(true);
   };
 
-  const handleTicket = (ticket: GetTicketModel) => setTicket(ticket);
+  const handleTicket = (ticket: GetTicketModel) => {
+    setTicket(ticket);
+    createTicketFollowUp(ticket.id, expoPushToken);
+  };
+
+  const createTicketFollowUp = (ticketId: number, deviceToken: string) => {
+    SapfiApi.post("v1/TicketsFollowUp", {
+      ticketId,
+      deviceToken,
+    })
+      .then((response) =>
+        successToast("Você será alertado quando sua vez estiver próxima!")
+      )
+      .catch((error) => {
+        errorToast("Não foi possível criar o alerta.");
+      });
+  };
 
   return !isReady ? (
     <Spinner color={colors.primary} />
