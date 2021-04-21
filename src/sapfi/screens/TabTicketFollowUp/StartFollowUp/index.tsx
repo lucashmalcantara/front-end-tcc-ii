@@ -14,14 +14,13 @@ export interface Props {
 const StartFollowUp: React.FC<Props> = ({ handleTicket }) => {
   const [friendlyHumanCompanyCode, setFriendlyHumanCompanyCode] = useState(
     "ABCD"
-  ); //TODO just for tests
-  const [ticketNumber, setTicketNumber] = useState("ABC123"); //TODO just for tests
+  ); //TODO remove latter. It's just for tests.
+  const [ticketNumber, setTicketNumber] = useState("ABC123"); //TODO remove latter. It's just for tests.
 
   const getTicket = async (
     friendlyHumanCompanyCode: string,
     number: string
   ) => {
-    console.log(">>>>>> getTicket");
     SapfiApi.get<GetTicketModel>("/v1/Tickets", {
       params: {
         friendlyHumanCompanyCode,

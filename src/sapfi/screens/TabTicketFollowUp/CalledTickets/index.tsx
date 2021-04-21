@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styles from "./styles";
 
 import { Label, Card, CardItem, Text, Body, View, Spinner } from "native-base";

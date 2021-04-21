@@ -1,9 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-} from "react";
-import { Container, Content, View, Label, Spinner, Toast } from "native-base";
+import React, { useState, useEffect, useContext } from "react";
+import { Container, Content, View, Spinner } from "native-base";
 
 import styles from "./styles";
 import Ticket from "./Ticket";
@@ -40,7 +36,7 @@ export default function TabTicketFollowUp() {
     updateFollowUpState();
 
     console.log(
-      `${backgroundJobExecutionId} - Waited ${delayInMilliseconds}ms`
+      `JOB ID ${backgroundJobExecutionId} - Waited ${delayInMilliseconds}ms`
     );
 
     setBackgroundJobExecutionId(Math.random());
@@ -95,7 +91,7 @@ export default function TabTicketFollowUp() {
       },
     })
       .then((response) => {
-          setCalledTickets(response.data);
+        setCalledTickets(response.data);
       })
       .catch((error) => {
         if (!error.response) {
@@ -115,7 +111,7 @@ export default function TabTicketFollowUp() {
   const updateTicketState = (ticketId: number) => {
     SapfiApi.get(`v1/Tickets/${ticketId}`)
       .then((response) => {
-        console.log(`Ticket de ID ${ticketId} atualizado com sucesso.`);
+        console.log(`Ticket (ID ${ticketId}) updated successfully.`);
         setTicket(response.data);
       })
       .catch((error) => {

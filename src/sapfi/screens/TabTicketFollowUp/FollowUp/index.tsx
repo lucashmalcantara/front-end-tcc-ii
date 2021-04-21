@@ -1,16 +1,7 @@
-import React, { Component } from "react";
+import React from "react";
 import styles from "./styles";
 
-import {
-  Container,
-  Header,
-  Content,
-  Card,
-  CardItem,
-  Text,
-  Body,
-  View,
-} from "native-base";
+import { Card, CardItem, Text, Body, View } from "native-base";
 
 export interface Props {
   linePosition: number;

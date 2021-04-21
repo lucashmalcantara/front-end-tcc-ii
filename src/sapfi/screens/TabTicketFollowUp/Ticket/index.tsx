@@ -1,16 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 import styles from "./styles";
 import moment from "moment";
 
-import {
-  Container,
-  Header,
-  Content,
-  Card,
-  CardItem,
-  Text,
-  Body,
-} from "native-base";
+import { Card, CardItem, Text, Body } from "native-base";
 
 export interface Props {
   number: string;
@@ -26,7 +18,9 @@ const Ticket: React.FC<Props> = ({ number, issueDate }) => {
       <CardItem bordered>
         <Body style={styles.cardBody}>
           <Text style={styles.ticketNumber}>{number}</Text>
-          <Text style={styles.ticketIssueDate}>Data emissão: {moment(issueDate).format('DD/MM HH:mm')}</Text>
+          <Text style={styles.ticketIssueDate}>
+            Data emissão: {moment(issueDate).format("DD/MM HH:mm")}
+          </Text>
         </Body>
       </CardItem>
     </Card>
