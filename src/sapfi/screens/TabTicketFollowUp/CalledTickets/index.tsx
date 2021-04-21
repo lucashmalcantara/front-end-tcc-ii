@@ -4,49 +4,14 @@ import styles from "./styles";
 import { Label, Card, CardItem, Text, Body, View, Spinner } from "native-base";
 import moment from "moment";
 
-import SapfiApi from "../../../services/Sapfi/Api";
 import GetCalledTicketModel from "../../../services/Sapfi/Models/Ticket/Get/GetCalledTicketModel";
-import { Alert } from "react-native";
-import ErrorModel from "../../../services/Sapfi/Models/Core/ErrorModel";
 import { colors } from "../../../styles";
-import { showErrorToast } from "../../../components/Toast";
-import { showErrorToastFromHttpResponse } from "../../../helpers/errorToastHelper";
 
 export interface Props {
-  companyId: number;
-  quantity: number;
+  calledTickets: GetCalledTicketModel[] | undefined;
 }
 
-const CalledTickets: React.FC<Props> = ({ companyId, quantity }) => {
-  const [isReady, setIsReady] = useState(false);
-
-  const [calledTickets, setCalledTickets] = useState<GetCalledTicketModel[]>(
-    []
-  );
-
-  useEffect(() => {
-    setIsReady(false);
-    getTicket(companyId, quantity);
-  }, []);
-
-  const getTicket = async (companyId: number, quantity: number) => {
-    SapfiApi.get<GetCalledTicketModel[]>("/v1/Tickets/called-tickets/last", {
-      params: {
-        companyId,
-        quantity,
-      },
-    })
-      .then((response) => setCalledTickets(response.data))
-      .catch((error) => {
-        if (!error.response) {
-          showErrorToast(error.toString());
-          return;
-        }
-        showErrorToastFromHttpResponse(error);
-      })
-      .finally(() => setIsReady(true));
-  };
-
+const CalledTickets: React.FC<Props> = ({ calledTickets }) => {
   return (
     <Card>
       <CardItem header bordered>
@@ -54,11 +19,11 @@ const CalledTickets: React.FC<Props> = ({ companyId, quantity }) => {
       </CardItem>
       <CardItem bordered>
         <Body style={styles.cardBody}>
-          {!isReady && <Spinner color={colors.primary} />}
-          {isReady && calledTickets.length === 0 && (
+          {calledTickets === undefined && <Spinner color={colors.primary} />}
+          {calledTickets && calledTickets.length === 0 && (
             <Label>Nenhum encontrado.</Label>
           )}
-          {isReady && calledTickets.length > 0 && (
+          {calledTickets && calledTickets.length > 0 && (
             <>
               {calledTickets.map((calledTicket) => (
                 <View key={calledTicket.id} style={styles.cardItemContainer}>

@@ -4,7 +4,6 @@ import SapfiApi from "../../../services/Sapfi/Api";
 import { Form, Item, Input, Label, Button, Text, View } from "native-base";
 import GetTicketModel from "../../../services/Sapfi/Models/Ticket/Get/GetTicketModel";
 import { Alert } from "react-native";
-import ErrorModel from "../../../services/Sapfi/Models/Core/ErrorModel";
 import { showErrorToast } from "../../../components/Toast";
 import { showErrorToastFromHttpResponse } from "../../../helpers/errorToastHelper";
 

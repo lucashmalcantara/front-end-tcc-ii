@@ -1,9 +1,7 @@
 import React, {
-  Component,
   useState,
   useEffect,
   useContext,
-  useRef,
 } from "react";
 import { Container, Content, View, Label, Spinner, Toast } from "native-base";
 
@@ -19,8 +17,8 @@ import { colors } from "../../styles";
 import UserContext from "../../contexts/User";
 import SapfiApi from "../../services/Sapfi/Api";
 import { showErrorToast, showSuccessToast } from "../../components/Toast";
-import ErrorModel from "../../services/Sapfi/Models/Core/ErrorModel";
 import { showErrorToastFromHttpResponse } from "../../helpers/errorToastHelper";
+import GetCalledTicketModel from "../../services/Sapfi/Models/Ticket/Get/GetCalledTicketModel";
 
 const performDelay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -28,7 +26,25 @@ export default function TabTicketFollowUp() {
   const { expoPushToken } = useContext(UserContext);
   const [isReady, setIsReady] = useState(false);
   const [ticket, setTicket] = useState<GetTicketModel>();
-  const [backgroundJobRunning, setBackgroundJobRunning] = useState(false);
+  const [calledTickets, setCalledTickets] = useState<GetCalledTicketModel[]>();
+
+  const [backgroundJobExecutionId, setBackgroundJobExecutionId] = useState(0);
+
+  useEffect(() => {
+    backgroundJob(5000);
+  }, [backgroundJobExecutionId]);
+
+  const backgroundJob = async (delayInMilliseconds: number) => {
+    await performDelay(delayInMilliseconds);
+
+    updateFollowUpState();
+
+    console.log(
+      `${backgroundJobExecutionId} - Waited ${delayInMilliseconds}ms`
+    );
+
+    setBackgroundJobExecutionId(Math.random());
+  };
 
   useEffect(() => {
     initialize();
@@ -37,27 +53,7 @@ export default function TabTicketFollowUp() {
   const initialize = async () => {
     setIsReady(false);
     await loadNativeBaseFonts();
-    backgroundJob(2000);
     setIsReady(true);
-  };
-
-  const backgroundJob = async (delayInMilliseconds: number) => {
-    if (backgroundJobRunning) {
-      console.log("This job is already running...");
-      return;
-    }
-
-    setBackgroundJobRunning(true);
-
-    const jobId = Math.random();
-    console.log(`New job ID`, jobId);
-
-    while (true) {
-      await performDelay(delayInMilliseconds);
-      console.log(
-        `${jobId} - Waited ${delayInMilliseconds}ms - ${Date.now().toLocaleString()}`
-      );
-    }
   };
 
   const loadNativeBaseFonts = async () => {
@@ -70,6 +66,7 @@ export default function TabTicketFollowUp() {
 
   const handleTicket = (ticket: GetTicketModel) => {
     setTicket(ticket);
+    getCalledTickets(ticket.companyId, 3);
     createTicketFollowUp(ticket.id, expoPushToken);
   };
 
@@ -84,6 +81,46 @@ export default function TabTicketFollowUp() {
       .catch((error) => {
         if (!error.response) {
           showErrorToast("Não foi possível criar o alerta.");
+          return;
+        }
+        showErrorToastFromHttpResponse(error);
+      });
+  };
+
+  const getCalledTickets = async (companyId: number, quantity: number) => {
+    SapfiApi.get<GetCalledTicketModel[]>("/v1/Tickets/called-tickets/last", {
+      params: {
+        companyId,
+        quantity,
+      },
+    })
+      .then((response) => {
+          setCalledTickets(response.data);
+      })
+      .catch((error) => {
+        if (!error.response) {
+          showErrorToast(error.toString());
+          return;
+        }
+        showErrorToastFromHttpResponse(error);
+      });
+  };
+
+  const updateFollowUpState = () => {
+    if (!ticket) return;
+    updateTicketState(ticket.id);
+    getCalledTickets(ticket.companyId, 3);
+  };
+
+  const updateTicketState = (ticketId: number) => {
+    SapfiApi.get(`v1/Tickets/${ticketId}`)
+      .then((response) => {
+        console.log(`Ticket de ID ${ticketId} atualizado com sucesso.`);
+        setTicket(response.data);
+      })
+      .catch((error) => {
+        if (!error.response) {
+          showErrorToast("Não foi possível atualizar o estado do ticket.");
           return;
         }
         showErrorToastFromHttpResponse(error);
@@ -107,7 +144,7 @@ export default function TabTicketFollowUp() {
             linePosition={ticket.linePosition}
             waitingTime={ticket.waitingTime}
           />
-          <CalledTickets companyId={ticket.companyId} quantity={3} />
+          <CalledTickets calledTickets={calledTickets} />
         </Content>
       )}
     </Container>
