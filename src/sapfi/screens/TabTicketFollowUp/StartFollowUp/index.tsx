@@ -5,7 +5,8 @@ import { Form, Item, Input, Label, Button, Text, View } from "native-base";
 import GetTicketModel from "../../../services/Sapfi/Models/Ticket/Get/GetTicketModel";
 import { Alert } from "react-native";
 import ErrorModel from "../../../services/Sapfi/Models/Core/ErrorModel";
-import { errorToast } from "../../../components/Toast";
+import { showErrorToast } from "../../../components/Toast";
+import { showErrorToastFromHttpResponse } from "../../../helpers/errorToastHelper";
 
 export interface Props {
   handleTicket: Function;
@@ -21,6 +22,7 @@ const StartFollowUp: React.FC<Props> = ({ handleTicket }) => {
     friendlyHumanCompanyCode: string,
     number: string
   ) => {
+    console.log(">>>>>> getTicket");
     SapfiApi.get<GetTicketModel>("/v1/Tickets", {
       params: {
         friendlyHumanCompanyCode,
@@ -37,11 +39,10 @@ const StartFollowUp: React.FC<Props> = ({ handleTicket }) => {
       )
       .catch((error) => {
         if (!error.response) {
-          errorToast(error.toString());
+          showErrorToast(error.toString());
           return;
         }
-        let errorModel: ErrorModel = error.response.data;
-        errorToast(errorModel.message);
+        showErrorToastFromHttpResponse(error);
       });
   };
 

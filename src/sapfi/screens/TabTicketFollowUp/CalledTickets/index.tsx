@@ -9,7 +9,8 @@ import GetCalledTicketModel from "../../../services/Sapfi/Models/Ticket/Get/GetC
 import { Alert } from "react-native";
 import ErrorModel from "../../../services/Sapfi/Models/Core/ErrorModel";
 import { colors } from "../../../styles";
-import { errorToast } from "../../../components/Toast";
+import { showErrorToast } from "../../../components/Toast";
+import { showErrorToastFromHttpResponse } from "../../../helpers/errorToastHelper";
 
 export interface Props {
   companyId: number;
@@ -38,11 +39,10 @@ const CalledTickets: React.FC<Props> = ({ companyId, quantity }) => {
       .then((response) => setCalledTickets(response.data))
       .catch((error) => {
         if (!error.response) {
-          errorToast(error.toString());
+          showErrorToast(error.toString());
           return;
         }
-        let errorModel: ErrorModel = error.response.data;
-        errorToast(errorModel.message);
+        showErrorToastFromHttpResponse(error);
       })
       .finally(() => setIsReady(true));
   };

@@ -27,7 +27,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "useNextNotificationsApi": true,
-      "permissions": ["RECEIVE_BOOT_COMPLETED"]
+      "permissions": ["RECEIVE_BOOT_COMPLETED", "WAKE_LOCK"]
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

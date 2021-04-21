@@ -1,4 +1,10 @@
-import React, { Component, useState, useEffect, useContext } from "react";
+import React, {
+  Component,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
 import { Container, Content, View, Label, Spinner, Toast } from "native-base";
 
 import styles from "./styles";
@@ -12,26 +18,54 @@ import GetTicketModel from "../../services/Sapfi/Models/Ticket/Get/GetTicketMode
 import { colors } from "../../styles";
 import UserContext from "../../contexts/User";
 import SapfiApi from "../../services/Sapfi/Api";
-import { errorToast, successToast } from "../../components/Toast";
+import { showErrorToast, showSuccessToast } from "../../components/Toast";
+import ErrorModel from "../../services/Sapfi/Models/Core/ErrorModel";
+import { showErrorToastFromHttpResponse } from "../../helpers/errorToastHelper";
+
+const performDelay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export default function TabTicketFollowUp() {
   const { expoPushToken } = useContext(UserContext);
   const [isReady, setIsReady] = useState(false);
   const [ticket, setTicket] = useState<GetTicketModel>();
+  const [backgroundJobRunning, setBackgroundJobRunning] = useState(false);
 
   useEffect(() => {
-    loadNativeBaseFonts();
-    console.log("expoPushToken: ",expoPushToken);
+    initialize();
   }, []);
 
-  const loadNativeBaseFonts = async () => {
+  const initialize = async () => {
     setIsReady(false);
+    await loadNativeBaseFonts();
+    backgroundJob(2000);
+    setIsReady(true);
+  };
+
+  const backgroundJob = async (delayInMilliseconds: number) => {
+    if (backgroundJobRunning) {
+      console.log("This job is already running...");
+      return;
+    }
+
+    setBackgroundJobRunning(true);
+
+    const jobId = Math.random();
+    console.log(`New job ID`, jobId);
+
+    while (true) {
+      await performDelay(delayInMilliseconds);
+      console.log(
+        `${jobId} - Waited ${delayInMilliseconds}ms - ${Date.now().toLocaleString()}`
+      );
+    }
+  };
+
+  const loadNativeBaseFonts = async () => {
     await Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       ...Ionicons.font,
     });
-    setIsReady(true);
   };
 
   const handleTicket = (ticket: GetTicketModel) => {
@@ -45,10 +79,14 @@ export default function TabTicketFollowUp() {
       deviceToken,
     })
       .then((response) =>
-        successToast("Você será alertado quando sua vez estiver próxima!")
+        showSuccessToast("Você será alertado quando sua vez estiver próxima!")
       )
       .catch((error) => {
-        errorToast("Não foi possível criar o alerta.");
+        if (!error.response) {
+          showErrorToast("Não foi possível criar o alerta.");
+          return;
+        }
+        showErrorToastFromHttpResponse(error);
       });
   };
 

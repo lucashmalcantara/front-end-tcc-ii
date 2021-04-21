@@ -4,7 +4,7 @@ import React, { createContext, useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import { colors } from "../styles";
 import { Subscription } from "@unimodules/core";
-import { errorToast } from "../components/Toast";
+import { showErrorToast } from "../components/Toast";
 
 interface UserContextData {
   expoPushToken: string;
@@ -95,7 +95,7 @@ async function sendPushNotification(expoPushToken: string) {
 
 async function registerForPushNotificationsAsync() {
   if (!Constants.isDevice) {
-    errorToast("Deve ser usado um dispositivo físico para Push Notifications");
+    showErrorToast("Deve ser usado um dispositivo físico para Push Notifications");
     return "";
   }
 

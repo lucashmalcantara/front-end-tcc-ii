@@ -1,6 +1,6 @@
 import { Toast } from "native-base";
 
-export const successToast = (text: string, buttonText?: string) =>
+export const showSuccessToast = (text: string, buttonText?: string) =>
   Toast.show({
     text: text,
     buttonText: buttonText ?? "OK",
@@ -9,7 +9,7 @@ export const successToast = (text: string, buttonText?: string) =>
     duration: 3000,
   });
 
-export const errorToast = (text: string, buttonText?: string) =>
+export const showErrorToast = (text: string, buttonText?: string) =>
   Toast.show({
     text: text,
     buttonText: buttonText ?? "OK",
