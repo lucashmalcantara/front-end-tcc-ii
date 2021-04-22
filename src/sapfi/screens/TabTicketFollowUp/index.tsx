@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Container, Content, View, Spinner } from "native-base";
+import { Container, Content, View, Spinner, Button, Text } from "native-base";
 
 import styles from "./styles";
 import Ticket from "./Ticket";
@@ -23,6 +23,7 @@ export default function TabTicketFollowUp() {
   const [isReady, setIsReady] = useState(false);
   const [ticket, setTicket] = useState<GetTicketModel>();
   const [calledTickets, setCalledTickets] = useState<GetCalledTicketModel[]>();
+  const [shouldCloseFollowUp, setShouldCloseFollowUp] = useState(false);
 
   const [backgroundJobExecutionId, setBackgroundJobExecutionId] = useState(0);
 
@@ -49,6 +50,7 @@ export default function TabTicketFollowUp() {
   const initialize = async () => {
     setIsReady(false);
     await loadNativeBaseFonts();
+    setShouldCloseFollowUp(false);
     setIsReady(true);
   };
 
@@ -103,7 +105,7 @@ export default function TabTicketFollowUp() {
   };
 
   const updateFollowUpState = () => {
-    if (!ticket) return;
+    if (!ticket || shouldCloseFollowUp) return;
     updateTicketState(ticket.id);
     getCalledTickets(ticket.companyId, 3);
   };
@@ -123,6 +125,11 @@ export default function TabTicketFollowUp() {
       });
   };
 
+  const closeFollowUp = () => {
+    setShouldCloseFollowUp(true);
+    setTicket(undefined);
+  };
+
   return !isReady ? (
     <Spinner color={colors.primary} />
   ) : (
@@ -139,8 +146,17 @@ export default function TabTicketFollowUp() {
           <FollowUp
             linePosition={ticket.linePosition}
             waitingTime={ticket.waitingTime}
+            calledAt={ticket.calledAt}
           />
           <CalledTickets calledTickets={calledTickets} />
+          <Button
+            block
+            light
+            style={styles.baseMarginTop}
+            onPress={() => closeFollowUp()}
+          >
+            <Text>Fechar</Text>
+          </Button>
         </Content>
       )}
     </Container>

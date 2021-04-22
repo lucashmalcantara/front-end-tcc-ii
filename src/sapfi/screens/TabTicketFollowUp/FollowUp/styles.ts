@@ -13,6 +13,9 @@ const styles = StyleSheet.create({
   ticketIssueDate: {
     fontSize: fonts.medium,
   },
+  ticketAlreadyCalledContainer:{
+    alignItems: "center",
+  }
 });
 
 export default styles;
