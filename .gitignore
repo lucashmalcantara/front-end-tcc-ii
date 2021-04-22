@@ -102,3 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Project
+src/sapfi/package-lock.json
+src/sapfi/yarn.lock
