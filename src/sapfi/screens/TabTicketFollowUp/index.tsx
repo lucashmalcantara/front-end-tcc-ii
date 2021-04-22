@@ -23,12 +23,16 @@ export default function TabTicketFollowUp() {
   const [isReady, setIsReady] = useState(false);
   const [ticket, setTicket] = useState<GetTicketModel>();
   const [calledTickets, setCalledTickets] = useState<GetCalledTicketModel[]>();
-  const [shouldCloseFollowUp, setShouldCloseFollowUp] = useState(false);
+  const [followUpStarted, setFollowUpStarted] = useState(false);
 
   const [backgroundJobExecutionId, setBackgroundJobExecutionId] = useState(0);
 
   useEffect(() => {
-    backgroundJob(5000);
+    initialize();
+  }, []);
+
+  useEffect(() => {
+    backgroundJob(10000);
   }, [backgroundJobExecutionId]);
 
   const backgroundJob = async (delayInMilliseconds: number) => {
@@ -44,13 +48,13 @@ export default function TabTicketFollowUp() {
   };
 
   useEffect(() => {
-    initialize();
-  }, []);
+    if (!followUpStarted) setTicket(undefined);
+  }, [followUpStarted]);
 
   const initialize = async () => {
     setIsReady(false);
     await loadNativeBaseFonts();
-    setShouldCloseFollowUp(false);
+    setFollowUpStarted(false);
     setIsReady(true);
   };
 
@@ -66,6 +70,7 @@ export default function TabTicketFollowUp() {
     setTicket(ticket);
     getCalledTickets(ticket.companyId, 3);
     createTicketFollowUp(ticket.id, expoPushToken);
+    setFollowUpStarted(true);
   };
 
   const createTicketFollowUp = (ticketId: number, deviceToken: string) => {
@@ -105,7 +110,7 @@ export default function TabTicketFollowUp() {
   };
 
   const updateFollowUpState = () => {
-    if (!ticket || shouldCloseFollowUp) return;
+    if (!followUpStarted || !ticket) return;
     updateTicketState(ticket.id);
     getCalledTickets(ticket.companyId, 3);
   };
@@ -125,16 +130,11 @@ export default function TabTicketFollowUp() {
       });
   };
 
-  const closeFollowUp = () => {
-    setShouldCloseFollowUp(true);
-    setTicket(undefined);
-  };
-
   return !isReady ? (
     <Spinner color={colors.primary} />
   ) : (
     <Container>
-      {!ticket ? (
+      {!followUpStarted || !ticket ? (
         <Content padder>
           <View style={styles.containerStartFollowUp}>
             <StartFollowUp handleTicket={handleTicket} />
@@ -153,7 +153,7 @@ export default function TabTicketFollowUp() {
             block
             light
             style={styles.baseMarginTop}
-            onPress={() => closeFollowUp()}
+            onPress={() => setFollowUpStarted(false)}
           >
             <Text>Fechar</Text>
           </Button>
