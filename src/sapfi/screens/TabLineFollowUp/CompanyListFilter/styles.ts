@@ -10,9 +10,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: metrics.doubleBaseMargin
   },
-  startProcess :{
+  nearByCompaniesLabel :{
     fontSize: fonts.big
-  }
+  },
+  stateDropdown: {
+    height: 50,
+  },
 });
 
 export default styles;

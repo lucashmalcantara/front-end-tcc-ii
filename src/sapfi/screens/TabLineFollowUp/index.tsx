@@ -1,31 +1,48 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import styles from "./styles";
-import { Container, Header, Content, Card, CardItem, Text, Body } from "native-base";
+import { Button, Container, Content, View, Text } from "native-base";
+import CompanyList from "./CompanyList";
+import CompanyListFilter from "./CompanyListFilter";
+import GetCompanyModel from "../../services/Sapfi/Models/Company/Get/GetCompanyModel";
 
 export default function TabLineFollowUp() {
+  const [companies, setCompanies] = useState<GetCompanyModel[]>();
+  const [company, setCompany] = useState<GetCompanyModel>();
+
+  const handleCompany = (company: GetCompanyModel) => {
+    console.log(">>> Chamou handleCompany.");
+  };
+
+  const handleCompanyListFilter = (companies: GetCompanyModel[]) => {
+    console.log(">>> Chamou handleCompanyListFilter.", companies);
+    setCompanies(companies);
+  };
+
   return (
     <Container>
-    <Content padder>
-      <Card>
-        <CardItem header bordered>
-          <Text>NativeBase</Text>
-        </CardItem>
-        <CardItem bordered>
-          <Body>
-            <Text>
-              NativeBase is a free and open source framework that enable
-              developers to build
-              high-quality mobile apps using React Native iOS and Android
-              apps
-              with a fusion of ES6.
-            </Text>
-          </Body>
-        </CardItem>
-        <CardItem footer bordered>
-          <Text>GeekyAnts</Text>
-        </CardItem>
-      </Card>
-    </Content>
-  </Container>
+      <Content padder>
+        <View style={styles.companyListContainer}>
+          {company ? (
+            <Text>Tela do estado da fila (Empresa). Criar um componente</Text>
+          ) : !companies ? (
+            <CompanyListFilter
+              handleCompanyListFilter={handleCompanyListFilter}
+            />
+          ) : (
+            <View>
+              <CompanyList companies={companies} />
+              <Button
+                block
+                info
+                style={styles.baseMarginTop}
+                onPress={() => setCompanies(undefined)}
+              >
+                <Text>Voltar</Text>
+              </Button>
+            </View>
+          )}
+        </View>
+      </Content>
+    </Container>
   );
 }

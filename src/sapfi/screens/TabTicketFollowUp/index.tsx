@@ -151,11 +151,11 @@ export default function TabTicketFollowUp() {
           <CalledTickets calledTickets={calledTickets} />
           <Button
             block
-            light
+            danger
             style={styles.baseMarginTop}
             onPress={() => setFollowUpStarted(false)}
           >
-            <Text>Fechar</Text>
+            <Text>Finalizar</Text>
           </Button>
         </Content>
       )}
