@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./styles";
 import { Button, Container, Content, View, Text } from "native-base";
 import CompanyList from "./CompanyList";
@@ -6,19 +6,70 @@ import CompanyListFilter from "./CompanyListFilter";
 import GetCompanyModel from "../../services/Sapfi/Models/Company/Get/GetCompanyModel";
 import CompanyLineState from "./CompanyLineState";
 import GetCompanyLineModel from "../../services/Sapfi/Models/Company/Get/GetCompanyLineModels";
-import UserContext from "../../contexts/User";
-import Dialog from "react-native-dialog";
 import CompanyLineNotification from "./CompanyLineNotification";
 import SapfiApi from "../../services/Sapfi/Api";
 import { showErrorToast, showSuccessToast } from "../../components/Toast";
 import { showErrorToastFromHttpResponse } from "../../helpers/errorToastHelper";
+import UserContext from "../../contexts/User";
 
 export default function TabLineFollowUp() {
   const [companies, setCompanies] = useState<GetCompanyModel[]>();
   const [line, setLine] = useState<GetCompanyLineModel>();
-  const [visible, setDialog] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
+  const [lineFollowUpExists, setLineFollowUpExists] = useState(false);
+  const { expoPushToken } = useContext(UserContext);
 
-  const showDialog = (show:boolean) => {setDialog(show)};
+  useEffect(() => {
+    if (!line) return;
+
+    getLineFollowUp(line.id, expoPushToken);
+  }, [line]);
+
+  const getLineFollowUp = async (lineId: number, deviceToken: string) => {
+    SapfiApi.get<GetCompanyLineModel>("/v1/LinesFollowUp", {
+      params: {
+        lineId,
+        deviceToken,
+      },
+    })
+      .then((response) =>
+        response.status === 204
+          ? setLineFollowUpExists(false)
+          : setLineFollowUpExists(true)
+      )
+      .catch((error) => {
+        if (!error.response) {
+          showErrorToast(error.toString());
+          return;
+        }
+        showErrorToastFromHttpResponse(error);
+      });
+  };
+
+  const deleteLineFollowUp = async (lineId: number, deviceToken: string) => {
+    SapfiApi.delete<GetCompanyLineModel>("/v1/LinesFollowUp", {
+      params: {
+        lineId,
+        deviceToken,
+      },
+    })
+      .then((response) => {
+        setLineFollowUpExists(false);
+        showSuccessToast("Alerta de situação de fila excluído com sucesso.");
+      })
+      .catch((error) => {
+        if (!error.response) {
+          showErrorToast(error.toString());
+          return;
+        }
+        showErrorToastFromHttpResponse(error);
+      });
+  };
+
+  const handleDelete = () => {
+    if (!line) return;
+    deleteLineFollowUp(line.id, expoPushToken);
+  };
 
   const handleLine = (line: GetCompanyLineModel) => {
     console.log(">>> Chamou handleCompany.");
@@ -30,23 +81,10 @@ export default function TabLineFollowUp() {
     setCompanies(companies);
   };
 
-  const createNotification = (notifyWhen: number, lineId: number, deviceToken: string) => {
-    SapfiApi.post("v1/LinesFollowUp", {
-      lineId,
-      deviceToken,
-      notifyWhen
-    })
-      .then((response) =>
-        showSuccessToast("Você será alertado quando a fila atingir a quantidade de pessoas informada!")
-      )
-      .catch((error) => {
-        if (!error.response) {
-          showErrorToast("Não foi possível criar o alerta.");
-          return;
-        }
-        showErrorToastFromHttpResponse(error);
-      });
-  }
+  const handleDialogVisibility = (visible: boolean) => {
+    setShowDialog(visible);
+    if (line) getLineFollowUp(line.id, expoPushToken);
+  };
 
   return (
     <Container>
@@ -55,19 +93,30 @@ export default function TabLineFollowUp() {
           {line ? (
             <View>
               <CompanyLineState line={line} />
-              <Button
-                block
-                info
-                style={styles.baseMarginTop}
-                onPress={() => showDialog(false)}
-              >
-                <Text>Criar Alerta</Text>
-              </Button>
+              {lineFollowUpExists ? (
+                <Button
+                  block
+                  primary
+                  style={styles.baseMarginTop}
+                  onPress={() => handleDelete()}
+                >
+                  <Text>Excluir Alerta</Text>
+                </Button>
+              ) : (
+                <Button
+                  block
+                  primary
+                  style={styles.baseMarginTop}
+                  onPress={() => setShowDialog(true)}
+                >
+                  <Text>Criar Alerta</Text>
+                </Button>
+              )}
+
               <CompanyLineNotification
-              showDialog={showDialog}
-              lineId={line.id}
-              createCompanyLineNotification={createNotification}
-              show={visible}
+                handleDialogVisibility={handleDialogVisibility}
+                lineId={line.id}
+                visible={showDialog}
               />
               <Button
                 block
@@ -87,7 +136,7 @@ export default function TabLineFollowUp() {
               <CompanyList companies={companies} handleLine={handleLine} />
               <Button
                 block
-                info
+                danger
                 style={styles.baseMarginTop}
                 onPress={() => setCompanies(undefined)}
               >
