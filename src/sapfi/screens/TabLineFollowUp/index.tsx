@@ -12,12 +12,53 @@ import { showErrorToast, showSuccessToast } from "../../components/Toast";
 import { showErrorToastFromHttpResponse } from "../../helpers/errorToastHelper";
 import UserContext from "../../contexts/User";
 
+const performDelay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
 export default function TabLineFollowUp() {
+  const [backgroundJobExecutionId, setBackgroundJobExecutionId] = useState(0);
   const [companies, setCompanies] = useState<GetCompanyModel[]>();
   const [line, setLine] = useState<GetCompanyLineModel>();
   const [showDialog, setShowDialog] = useState(false);
   const [lineFollowUpExists, setLineFollowUpExists] = useState(false);
   const { expoPushToken } = useContext(UserContext);
+  const [closeCompanyLineState, setCloseCompanyLineState] = useState(false);
+
+  useEffect(() => {
+    backgroundJob(10000);
+  }, [backgroundJobExecutionId]);
+
+  const backgroundJob = async (delayInMilliseconds: number) => {
+    await performDelay(delayInMilliseconds);
+
+    updateLineFollowUpState();
+
+    console.log(
+      `TabLineFollowUp - JOB ID ${backgroundJobExecutionId} - Waited ${delayInMilliseconds}ms`
+    );
+
+    setBackgroundJobExecutionId(Math.random());
+  };
+
+  const updateLineFollowUpState = () => {
+    if (!line) return;
+    getLineById(line.id);
+  };
+
+  const getLineById = async (id: number) => {
+    SapfiApi.get<GetCompanyLineModel>("/v1/Lines", {
+      params: {
+        companyId: id,
+      },
+    })
+      .then((response) => !closeCompanyLineState ?? handleLine(response.data))
+      .catch((error) => {
+        if (!error.response) {
+          showErrorToast(error.toString());
+          return;
+        }
+        showErrorToastFromHttpResponse(error);
+      });
+  };
 
   useEffect(() => {
     if (!line) return;
@@ -72,7 +113,7 @@ export default function TabLineFollowUp() {
   };
 
   const handleLine = (line: GetCompanyLineModel) => {
-    console.log(">>> Chamou handleCompany.");
+    console.log(">>> Chamou handleLine.");
     setLine(line);
   };
 
@@ -84,6 +125,11 @@ export default function TabLineFollowUp() {
   const handleDialogVisibility = (visible: boolean) => {
     setShowDialog(visible);
     if (line) getLineFollowUp(line.id, expoPushToken);
+  };
+
+  const handleCompanyLineState = () => {
+    setCloseCompanyLineState(true);
+    setLine(undefined);
   };
 
   return (
@@ -122,7 +168,7 @@ export default function TabLineFollowUp() {
                 block
                 danger
                 style={styles.baseMarginTop}
-                onPress={() => setLine(undefined)}
+                onPress={() => handleCompanyLineState()}
               >
                 <Text>Fechar</Text>
               </Button>
