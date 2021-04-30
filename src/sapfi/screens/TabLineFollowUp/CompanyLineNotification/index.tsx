@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import GetCompanyLineModel from "../../../services/Sapfi/Models/Company/Get/GetCompanyLineModels";
 import Dialog from "react-native-dialog";
 import {
   showErrorToast,
@@ -61,6 +60,7 @@ const FollowUp: React.FC<Props> = ({
 
   const handleCancel = () => {
     handleDialogVisibility(false);
+    setNotifyWhen("");
   };
 
   const onChangeNotifyWhenInput = (text: string) => {
@@ -81,11 +81,16 @@ const FollowUp: React.FC<Props> = ({
         keyboardType="numeric"
         onChangeText={onChangeNotifyWhenInput}
         value={notifyWhen}
+        autoFocus={true}
       ></Dialog.Input>
-      <Dialog.Button label="Cancelar" onPress={handleCancel} />
+      <Dialog.Button
+        label="Cancelar"
+        onPress={handleCancel}
+        color={colors.primary}
+      />
       <Dialog.Button
         disabled={!notifyWhen}
-        color={notifyWhen ? undefined : colors.gray}
+        color={notifyWhen ? colors.primary : colors.gray}
         label="Confirmar"
         onPress={handleConfirm}
       />
