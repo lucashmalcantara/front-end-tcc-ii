@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   ticketNumber: {
-    fontSize: fonts.huge,
+    fontSize: fonts.big,
     fontWeight: 'bold'
   },
   ticketIssueDate: {

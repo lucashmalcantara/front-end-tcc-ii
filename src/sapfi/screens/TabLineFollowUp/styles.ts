@@ -1,12 +1,18 @@
 import { StyleSheet } from "react-native";
-import { metrics } from "../../styles";
+import { colors, metrics } from "../../styles";
 
 const styles = StyleSheet.create({
-  companyListContainer: {
-    marginTop: metrics.baseMargin,
-  },
   baseMarginTop: {
     marginTop: metrics.baseMargin,
+  },
+  companyTradingNameContainer: {
+    alignItems: "center",
+    margin: metrics.baseMargin,
+  },
+  companyTradingName: {
+    color: colors.primary,
+    textAlign:'center',
+    fontWeight: 'bold'
   },
 });
 

@@ -40,7 +40,7 @@ export default function BottomTabNavigator() {
         component={TabLineFollowUpNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="store" color={color} />,
-          tabBarLabel: "Acompanhar fila"
+          tabBarLabel: "Situação da fila"
         }}
       />
     </BottomTab.Navigator>

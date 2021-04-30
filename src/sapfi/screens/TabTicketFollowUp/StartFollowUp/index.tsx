@@ -12,10 +12,8 @@ export interface Props {
 }
 
 const StartFollowUp: React.FC<Props> = ({ handleTicket }) => {
-  const [friendlyHumanCompanyCode, setFriendlyHumanCompanyCode] = useState(
-    "ABCD"
-  ); //TODO remove latter. It's just for tests.
-  const [ticketNumber, setTicketNumber] = useState("ABC123"); //TODO remove latter. It's just for tests.
+  const [friendlyHumanCompanyCode, setFriendlyHumanCompanyCode] = useState("");
+  const [ticketNumber, setTicketNumber] = useState("");
 
   const getTicket = async (
     friendlyHumanCompanyCode: string,

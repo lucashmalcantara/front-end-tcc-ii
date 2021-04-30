@@ -29,7 +29,7 @@ export default function TabLineFollowUp() {
   const { expoPushToken } = useContext(UserContext);
 
   useEffect(() => {
-    lineStateBackgroundTask(3000);
+    lineStateBackgroundTask(10000);
   }, [lineStateBackgroundTaskExecutionCount]);
 
   const lineStateBackgroundTask = async (delayInMilliseconds: number) => {
@@ -142,9 +142,14 @@ export default function TabLineFollowUp() {
   return (
     <Container>
       <Content padder>
-        <View style={styles.companyListContainer}>
+        <View>
           {line ? (
             <View>
+              <View style={styles.companyTradingNameContainer}>
+                <Text style={styles.companyTradingName}>
+                  {companies?.find((c) => c.id === line.id)?.tradingName}
+                </Text>
+              </View>
               <CompanyLineState line={line} />
               {lineFollowUpExists ? (
                 <Button

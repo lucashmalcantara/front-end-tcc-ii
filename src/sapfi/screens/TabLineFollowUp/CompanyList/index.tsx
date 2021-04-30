@@ -40,7 +40,7 @@ const CompanyList: React.FC<Props> = ({ companies, handleLine }) => {
         response.status === 204
           ? Alert.alert(
               "Nenhuma fila encontrada",
-              "Não foi possível encontrar uma fila de espera para este estabelecimento"
+              "Não foi possível encontrar uma fila de espera para este estabelecimento."
             )
           : handleLine(response.data)
       )

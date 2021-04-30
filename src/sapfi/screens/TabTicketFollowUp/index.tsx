@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Container, Content, View, Spinner, Button, Text } from "native-base";
+import {
+  Container,
+  Content,
+  View,
+  Spinner,
+  Button,
+  Text,
+} from "native-base";
 
 import styles from "./styles";
 import Ticket from "./Ticket";
@@ -35,7 +42,7 @@ export default function TabTicketFollowUp() {
   }, []);
 
   useEffect(() => {
-    ticketStateBackgroundTask(5000);
+    ticketStateBackgroundTask(10000);
   }, [ticketStateBackgroundTaskExecutionCount]);
 
   const ticketStateBackgroundTask = async (delayInMilliseconds: number) => {
@@ -53,7 +60,6 @@ export default function TabTicketFollowUp() {
       ticketStateBackgroundTaskExecutionCount + 1
     );
   };
-
 
   const initialize = async () => {
     setIsReady(false);
@@ -153,6 +159,9 @@ export default function TabTicketFollowUp() {
         </Content>
       ) : (
         <Content padder>
+          <View style={styles.companyTradingNameContainer}>
+            <Text style={styles.companyTradingName}>{ticket.companyTradingName}</Text>
+          </View>
           <Ticket number={ticket.number} issueDate={ticket.issueDate} />
           <FollowUp
             linePosition={ticket.linePosition}
