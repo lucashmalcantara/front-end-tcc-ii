@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styles from "./styles";
 import { Button, Container, Content, View, Text } from "native-base";
 import CompanyList from "./CompanyList";
@@ -15,33 +15,37 @@ import UserContext from "../../contexts/User";
 const performDelay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export default function TabLineFollowUp() {
-  const [backgroundJobExecutionId, setBackgroundJobExecutionId] = useState(0);
+  const [
+    lineStateBackgroundTaskExecutionCount,
+    setLineStateBackgroundTaskExecutionCount,
+  ] = useState(0);
+
+  const cancelLineStateBackgroundTask = useRef<boolean>();
+
   const [companies, setCompanies] = useState<GetCompanyModel[]>();
   const [line, setLine] = useState<GetCompanyLineModel>();
   const [showDialog, setShowDialog] = useState(false);
   const [lineFollowUpExists, setLineFollowUpExists] = useState(false);
   const { expoPushToken } = useContext(UserContext);
-  const [closeCompanyLineState, setCloseCompanyLineState] = useState(false);
 
   useEffect(() => {
-    backgroundJob(10000);
-  }, [backgroundJobExecutionId]);
+    lineStateBackgroundTask(3000);
+  }, [lineStateBackgroundTaskExecutionCount]);
 
-  const backgroundJob = async (delayInMilliseconds: number) => {
+  const lineStateBackgroundTask = async (delayInMilliseconds: number) => {
+    if (cancelLineStateBackgroundTask.current) return;
+
     await performDelay(delayInMilliseconds);
 
-    updateLineFollowUpState();
+    if (line) getLineById(line.id);
 
     console.log(
-      `TabLineFollowUp - JOB ID ${backgroundJobExecutionId} - Waited ${delayInMilliseconds}ms`
+      `TabLineFollowUp - BACKGROUND TASK ${lineStateBackgroundTaskExecutionCount} - Waited ${delayInMilliseconds}ms`
     );
 
-    setBackgroundJobExecutionId(Math.random());
-  };
-
-  const updateLineFollowUpState = () => {
-    if (!line) return;
-    getLineById(line.id);
+    setLineStateBackgroundTaskExecutionCount(
+      lineStateBackgroundTaskExecutionCount + 1
+    );
   };
 
   const getLineById = async (id: number) => {
@@ -50,7 +54,10 @@ export default function TabLineFollowUp() {
         companyId: id,
       },
     })
-      .then((response) => !closeCompanyLineState ?? handleLine(response.data))
+      .then((response) => {
+        console.log(">>> getLineById then", response.data);
+        if (!cancelLineStateBackgroundTask.current) setLine(response.data);
+      })
       .catch((error) => {
         if (!error.response) {
           showErrorToast(error.toString());
@@ -113,12 +120,12 @@ export default function TabLineFollowUp() {
   };
 
   const handleLine = (line: GetCompanyLineModel) => {
-    console.log(">>> Chamou handleLine.");
     setLine(line);
+    setLineStateBackgroundTaskExecutionCount(0);
+    cancelLineStateBackgroundTask.current = false;
   };
 
   const handleCompanyListFilter = (companies: GetCompanyModel[]) => {
-    console.log(">>> Chamou handleCompanyListFilter.", companies);
     setCompanies(companies);
   };
 
@@ -127,8 +134,8 @@ export default function TabLineFollowUp() {
     if (line) getLineFollowUp(line.id, expoPushToken);
   };
 
-  const handleCompanyLineState = () => {
-    setCloseCompanyLineState(true);
+  const handleCloseLineState = () => {
+    cancelLineStateBackgroundTask.current = true;
     setLine(undefined);
   };
 
@@ -168,9 +175,9 @@ export default function TabLineFollowUp() {
                 block
                 danger
                 style={styles.baseMarginTop}
-                onPress={() => handleCompanyLineState()}
+                onPress={() => handleCloseLineState()}
               >
-                <Text>Fechar</Text>
+                <Text>Voltar</Text>
               </Button>
             </View>
           ) : !companies ? (
