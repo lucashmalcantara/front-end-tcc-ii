@@ -3,10 +3,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 
-import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import TabLineFollowUp from "../screens/TabLineFollowUp/index";
 import TabTicketFollowUp from "../screens/TabTicketFollowUp/index";
+import { colors } from "../styles";
 
 import {
   BottomTabParamList,
@@ -23,7 +23,7 @@ export default function BottomTabNavigator() {
     <BottomTab.Navigator
       initialRouteName="TabTicketFollowUp"
       tabBarOptions={{
-        activeTintColor: Colors[colorScheme].tint,
+        activeTintColor: colors.primary,
         keyboardHidesTabBar: true,
       }}
     >
@@ -31,7 +31,8 @@ export default function BottomTabNavigator() {
         name="TabTicketFollowUp"
         component={TabTicketFollowUpNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="people-alt" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="fastfood" color={color}  />,
+          tabBarLabel: "Acompanhar pedido"
         }}
       />
       <BottomTab.Screen
@@ -39,6 +40,7 @@ export default function BottomTabNavigator() {
         component={TabLineFollowUpNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="store" color={color} />,
+          tabBarLabel: "Situação da fila"
         }}
       />
     </BottomTab.Navigator>

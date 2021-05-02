@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { metrics } from "../../styles";
+import { colors, metrics } from "../../styles";
 
 const styles = StyleSheet.create({
   containerStartFollowUp: {
@@ -7,6 +7,15 @@ const styles = StyleSheet.create({
   },
   baseMarginTop: {
     marginTop: metrics.baseMargin,
+  },
+  companyTradingNameContainer: {
+    alignItems: "center",
+    margin: metrics.baseMargin,
+  },
+  companyTradingName: {
+    color: colors.primary,
+    textAlign:'center',
+    fontWeight: 'bold'
   },
 });
 

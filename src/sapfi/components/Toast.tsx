@@ -17,3 +17,12 @@ export const showErrorToast = (text: string, buttonText?: string) =>
     position: "bottom",
     duration: 3000,
   });
+
+export const showWarningToast = (text: string, buttonText?: string) =>
+  Toast.show({
+    text: text,
+    buttonText: buttonText ?? "OK",
+    type: "warning",
+    position: "bottom",
+    duration: 3000,
+  });

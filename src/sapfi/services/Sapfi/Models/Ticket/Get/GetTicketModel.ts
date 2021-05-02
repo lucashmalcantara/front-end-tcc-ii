@@ -6,4 +6,5 @@ export default interface GetTicketModel {
   waitingTime: number;
   calledAt: Date;
   companyId: number;
+  companyTradingName: string;
 }

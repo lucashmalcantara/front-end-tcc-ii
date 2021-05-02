@@ -1,5 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Container, Content, View, Spinner, Button, Text } from "native-base";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import {
+  Container,
+  Content,
+  View,
+  Spinner,
+  Button,
+  Text,
+} from "native-base";
 
 import styles from "./styles";
 import Ticket from "./Ticket";
@@ -23,38 +30,40 @@ export default function TabTicketFollowUp() {
   const [isReady, setIsReady] = useState(false);
   const [ticket, setTicket] = useState<GetTicketModel>();
   const [calledTickets, setCalledTickets] = useState<GetCalledTicketModel[]>();
-  const [followUpStarted, setFollowUpStarted] = useState(false);
 
-  const [backgroundJobExecutionId, setBackgroundJobExecutionId] = useState(0);
+  const cancelTicketStateBackgroundTask = useRef<boolean>();
+  const [
+    ticketStateBackgroundTaskExecutionCount,
+    setTicketStateBackgroundTaskExecutionCount,
+  ] = useState(0);
 
   useEffect(() => {
     initialize();
   }, []);
 
   useEffect(() => {
-    backgroundJob(10000);
-  }, [backgroundJobExecutionId]);
+    ticketStateBackgroundTask(10000);
+  }, [ticketStateBackgroundTaskExecutionCount]);
 
-  const backgroundJob = async (delayInMilliseconds: number) => {
+  const ticketStateBackgroundTask = async (delayInMilliseconds: number) => {
+    if (cancelTicketStateBackgroundTask.current) return;
+
     await performDelay(delayInMilliseconds);
 
-    updateFollowUpState();
+    if (ticket) updateFollowUpState();
 
     console.log(
-      `JOB ID ${backgroundJobExecutionId} - Waited ${delayInMilliseconds}ms`
+      `TabLineFollowUp - BACKGROUND TASK ${ticketStateBackgroundTaskExecutionCount} - Waited ${delayInMilliseconds}ms`
     );
 
-    setBackgroundJobExecutionId(Math.random());
+    setTicketStateBackgroundTaskExecutionCount(
+      ticketStateBackgroundTaskExecutionCount + 1
+    );
   };
-
-  useEffect(() => {
-    if (!followUpStarted) setTicket(undefined);
-  }, [followUpStarted]);
 
   const initialize = async () => {
     setIsReady(false);
     await loadNativeBaseFonts();
-    setFollowUpStarted(false);
     setIsReady(true);
   };
 
@@ -70,7 +79,9 @@ export default function TabTicketFollowUp() {
     setTicket(ticket);
     getCalledTickets(ticket.companyId, 3);
     createTicketFollowUp(ticket.id, expoPushToken);
-    setFollowUpStarted(true);
+
+    setTicketStateBackgroundTaskExecutionCount(0);
+    cancelTicketStateBackgroundTask.current = false;
   };
 
   const createTicketFollowUp = (ticketId: number, deviceToken: string) => {
@@ -98,7 +109,8 @@ export default function TabTicketFollowUp() {
       },
     })
       .then((response) => {
-        setCalledTickets(response.data);
+        if (!cancelTicketStateBackgroundTask.current)
+          setCalledTickets(response.data);
       })
       .catch((error) => {
         if (!error.response) {
@@ -110,16 +122,16 @@ export default function TabTicketFollowUp() {
   };
 
   const updateFollowUpState = () => {
-    if (!followUpStarted || !ticket) return;
-    updateTicketState(ticket.id);
+    if (!ticket) return;
+    getTicket(ticket.id);
     getCalledTickets(ticket.companyId, 3);
   };
 
-  const updateTicketState = (ticketId: number) => {
+  const getTicket = (ticketId: number) => {
     SapfiApi.get(`v1/Tickets/${ticketId}`)
       .then((response) => {
         console.log(`Ticket (ID ${ticketId}) updated successfully.`);
-        setTicket(response.data);
+        if (!cancelTicketStateBackgroundTask.current) setTicket(response.data);
       })
       .catch((error) => {
         if (!error.response) {
@@ -130,11 +142,16 @@ export default function TabTicketFollowUp() {
       });
   };
 
+  const handleCloseTicketState = () => {
+    cancelTicketStateBackgroundTask.current = true;
+    setTicket(undefined);
+  };
+
   return !isReady ? (
     <Spinner color={colors.primary} />
   ) : (
     <Container>
-      {!followUpStarted || !ticket ? (
+      {!ticket ? (
         <Content padder>
           <View style={styles.containerStartFollowUp}>
             <StartFollowUp handleTicket={handleTicket} />
@@ -142,6 +159,9 @@ export default function TabTicketFollowUp() {
         </Content>
       ) : (
         <Content padder>
+          <View style={styles.companyTradingNameContainer}>
+            <Text style={styles.companyTradingName}>{ticket.companyTradingName}</Text>
+          </View>
           <Ticket number={ticket.number} issueDate={ticket.issueDate} />
           <FollowUp
             linePosition={ticket.linePosition}
@@ -151,11 +171,11 @@ export default function TabTicketFollowUp() {
           <CalledTickets calledTickets={calledTickets} />
           <Button
             block
-            light
+            danger
             style={styles.baseMarginTop}
-            onPress={() => setFollowUpStarted(false)}
+            onPress={handleCloseTicketState}
           >
-            <Text>Fechar</Text>
+            <Text>Finalizar</Text>
           </Button>
         </Content>
       )}

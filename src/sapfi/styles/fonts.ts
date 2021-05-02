@@ -2,10 +2,10 @@ const fonts = {
   huge: 32,
   big: 24,
   input: 16,
-  regular: 14,
-  medium: 12,
-  small: 11,
-  tiny: 10,
+  regular: 16,
+  medium: 14,
+  small: 12,
+  tiny: 11,
 };
 
 export default fonts;
