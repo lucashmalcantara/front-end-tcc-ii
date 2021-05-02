@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import {
-  Container,
-  Content,
-  View,
-  Spinner,
-  Button,
-  Text,
-} from "native-base";
+import { Container, Content, View, Spinner, Button, Text } from "native-base";
 
 import styles from "./styles";
 import Ticket from "./Ticket";
@@ -52,10 +45,6 @@ export default function TabTicketFollowUp() {
 
     if (ticket) updateFollowUpState();
 
-    console.log(
-      `TabLineFollowUp - BACKGROUND TASK ${ticketStateBackgroundTaskExecutionCount} - Waited ${delayInMilliseconds}ms`
-    );
-
     setTicketStateBackgroundTaskExecutionCount(
       ticketStateBackgroundTaskExecutionCount + 1
     );
@@ -89,8 +78,10 @@ export default function TabTicketFollowUp() {
       ticketId,
       deviceToken,
     })
-      .then((response) =>
-        showSuccessToast("Você será alertado quando sua vez estiver próxima!")
+      .then((response) =>{
+        showSuccessToast("Você será alertado quando sua vez estiver próxima!");
+      }
+        
       )
       .catch((error) => {
         if (!error.response) {
@@ -130,7 +121,6 @@ export default function TabTicketFollowUp() {
   const getTicket = (ticketId: number) => {
     SapfiApi.get(`v1/Tickets/${ticketId}`)
       .then((response) => {
-        console.log(`Ticket (ID ${ticketId}) updated successfully.`);
         if (!cancelTicketStateBackgroundTask.current) setTicket(response.data);
       })
       .catch((error) => {
@@ -160,7 +150,9 @@ export default function TabTicketFollowUp() {
       ) : (
         <Content padder>
           <View style={styles.companyTradingNameContainer}>
-            <Text style={styles.companyTradingName}>{ticket.companyTradingName}</Text>
+            <Text style={styles.companyTradingName}>
+              {ticket.companyTradingName}
+            </Text>
           </View>
           <Ticket number={ticket.number} issueDate={ticket.issueDate} />
           <FollowUp
