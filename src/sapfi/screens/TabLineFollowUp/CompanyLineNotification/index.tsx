@@ -56,6 +56,7 @@ const FollowUp: React.FC<Props> = ({
 
     createLineFollowUp(Number.parseInt(notifyWhen), lineId, expoPushToken);
     handleDialogVisibility(false);
+    setNotifyWhen("");
   };
 
   const handleCancel = () => {
