@@ -34,11 +34,13 @@ const FollowUp: React.FC<Props> = ({
       deviceToken,
       notifyWhen,
     })
-      .then((response) =>
+      .then((response) => {
+        handleDialogVisibility(false);
+        setNotifyWhen("");
         showSuccessToast(
           "Você será alertado quando a fila atingir a quantidade de pessoas informada!"
-        )
-      )
+        );
+      })
       .catch((error) => {
         if (!error.response) {
           showErrorToast("Não foi possível criar o alerta.");
@@ -53,10 +55,8 @@ const FollowUp: React.FC<Props> = ({
       showWarningToast("Por favor, insira um valor válido!");
       return;
     }
-
+    
     createLineFollowUp(Number.parseInt(notifyWhen), lineId, expoPushToken);
-    handleDialogVisibility(false);
-    setNotifyWhen("");
   };
 
   const handleCancel = () => {

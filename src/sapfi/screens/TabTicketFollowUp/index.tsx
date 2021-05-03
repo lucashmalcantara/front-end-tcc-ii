@@ -80,11 +80,9 @@ export default function TabTicketFollowUp() {
       ticketId,
       deviceToken,
     })
-      .then((response) =>{
+      .then((response) => {
         showSuccessToast("Você será alertado quando sua vez estiver próxima!");
-      }
-        
-      )
+      })
       .catch((error) => {
         if (!error.response) {
           showErrorToast("Não foi possível criar o alerta.");
@@ -138,7 +136,10 @@ export default function TabTicketFollowUp() {
     setShowDialog(visible);
   };
 
-  const deleteTicketFollowUp = async (ticketId: number, deviceToken: string) => {
+  const deleteTicketFollowUp = async (
+    ticketId: number,
+    deviceToken: string
+  ) => {
     SapfiApi.delete("/v1/TicketsFollowUp", {
       params: {
         ticketId,
@@ -148,6 +149,7 @@ export default function TabTicketFollowUp() {
       .then((response) => {
         cancelTicketStateBackgroundTask.current = true;
         setTicket(undefined);
+        setShowDialog(false);
         showSuccessToast("Acompanhamento finalizado com sucesso.");
       })
       .catch((error) => {
@@ -189,14 +191,14 @@ export default function TabTicketFollowUp() {
           />
           <CalledTickets calledTickets={calledTickets} />
           <ModalComponent
-          handleDialogVisibility={handleDialogVisibility}
-          handleConfirm={handleDelete}
-          title={"Finalizar acompanhamento"}
-          description={`Deseja realmente finalizar o acompanhamento do ticket ${ticket.number}?`}
-          confirmButton={"SIM"}
-          cancelButton={"NÃO"}
-          visible={showDialog}
-          />          
+            handleDialogVisibility={handleDialogVisibility}
+            handleConfirm={handleDelete}
+            title={"Finalizar acompanhamento"}
+            description={`Deseja finalizar o acompanhamento do ticket ${ticket.number}?`}
+            confirmButton={"SIM"}
+            cancelButton={"NÃO"}
+            visible={showDialog}
+          />
           <Button
             block
             danger
