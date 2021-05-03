@@ -90,7 +90,7 @@ export default function TabLineFollowUp() {
   };
 
   const deleteLineFollowUp = async (lineId: number, deviceToken: string) => {
-    SapfiApi.delete<GetCompanyLineModel>("/v1/LinesFollowUp", {
+    SapfiApi.delete("/v1/LinesFollowUp", {
       params: {
         lineId,
         deviceToken,
