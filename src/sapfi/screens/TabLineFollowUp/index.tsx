@@ -133,6 +133,7 @@ export default function TabLineFollowUp() {
     setLine(line);
     setLineStateBackgroundTaskExecutionCount(0);
     cancelLineStateBackgroundTask.current = false;
+    if (line) getLineFollowUp(line.id, expoPushToken);
   };
 
   const handleCompanyListFilter = (companies: GetCompanyModel[]) => {
