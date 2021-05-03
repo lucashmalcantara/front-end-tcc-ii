@@ -15,6 +15,7 @@ import SapfiApi from "../../services/Sapfi/Api";
 import { showErrorToast, showSuccessToast } from "../../components/Toast";
 import { showErrorToastFromHttpResponse } from "../../helpers/errorToastHelper";
 import GetCalledTicketModel from "../../services/Sapfi/Models/Ticket/Get/GetCalledTicketModel";
+import ModalComponent from "../../components/ModalComponent";
 
 const performDelay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -23,6 +24,7 @@ export default function TabTicketFollowUp() {
   const [isReady, setIsReady] = useState(false);
   const [ticket, setTicket] = useState<GetTicketModel>();
   const [calledTickets, setCalledTickets] = useState<GetCalledTicketModel[]>();
+  const [showDialog, setShowDialog] = useState(false);
 
   const cancelTicketStateBackgroundTask = useRef<boolean>();
   const [
@@ -78,11 +80,9 @@ export default function TabTicketFollowUp() {
       ticketId,
       deviceToken,
     })
-      .then((response) =>{
+      .then((response) => {
         showSuccessToast("Você será alertado quando sua vez estiver próxima!");
-      }
-        
-      )
+      })
       .catch((error) => {
         if (!error.response) {
           showErrorToast("Não foi possível criar o alerta.");
@@ -132,9 +132,38 @@ export default function TabTicketFollowUp() {
       });
   };
 
-  const handleCloseTicketState = () => {
-    cancelTicketStateBackgroundTask.current = true;
-    setTicket(undefined);
+  const handleDialogVisibility = (visible: boolean) => {
+    setShowDialog(visible);
+  };
+
+  const deleteTicketFollowUp = async (
+    ticketId: number,
+    deviceToken: string
+  ) => {
+    SapfiApi.delete("/v1/TicketsFollowUp", {
+      params: {
+        ticketId,
+        deviceToken,
+      },
+    })
+      .then((response) => {
+        cancelTicketStateBackgroundTask.current = true;
+        setTicket(undefined);
+        setShowDialog(false);
+        showSuccessToast("Acompanhamento finalizado com sucesso.");
+      })
+      .catch((error) => {
+        if (!error.response) {
+          showErrorToast(error.toString());
+          return;
+        }
+        showErrorToastFromHttpResponse(error);
+      });
+  };
+
+  const handleDelete = () => {
+    if (!ticket) return;
+    deleteTicketFollowUp(ticket.id, expoPushToken);
   };
 
   return !isReady ? (
@@ -161,11 +190,20 @@ export default function TabTicketFollowUp() {
             calledAt={ticket.calledAt}
           />
           <CalledTickets calledTickets={calledTickets} />
+          <ModalComponent
+            handleDialogVisibility={handleDialogVisibility}
+            handleConfirm={handleDelete}
+            title={"Finalizar acompanhamento"}
+            description={`Deseja finalizar o acompanhamento do ticket ${ticket.number}?`}
+            confirmButton={"SIM"}
+            cancelButton={"NÃO"}
+            visible={showDialog}
+          />
           <Button
             block
             danger
             style={styles.baseMarginTop}
-            onPress={handleCloseTicketState}
+            onPress={() => setShowDialog(true)}
           >
             <Text>Finalizar</Text>
           </Button>

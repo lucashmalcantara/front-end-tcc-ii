@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styles from "./styles";
-import { Button, Container, Content, View, Text } from "native-base";
+import { Button, Container, Content, View, Text, Spinner } from "native-base";
 import CompanyList from "./CompanyList";
 import CompanyListFilter from "./CompanyListFilter";
 import GetCompanyModel from "../../services/Sapfi/Models/Company/Get/GetCompanyModel";
@@ -11,6 +11,8 @@ import SapfiApi from "../../services/Sapfi/Api";
 import { showErrorToast, showSuccessToast } from "../../components/Toast";
 import { showErrorToastFromHttpResponse } from "../../helpers/errorToastHelper";
 import UserContext from "../../contexts/User";
+import ModalComponent from "../../components/ModalComponent";
+import { colors } from "../../styles";
 
 const performDelay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -24,8 +26,18 @@ export default function TabLineFollowUp() {
 
   const [companies, setCompanies] = useState<GetCompanyModel[]>();
   const [line, setLine] = useState<GetCompanyLineModel>();
-  const [showDialog, setShowDialog] = useState(false);
+  const [
+    showCompanyLineNotificationDialog,
+    setShowCompanyLineNotificationDialog,
+  ] = useState(false);
+  const [
+    showDeleteLineFollowUpDialog,
+    setShowDeleteLineFollowUpDialog,
+  ] = useState(false);
   const [lineFollowUpExists, setLineFollowUpExists] = useState(false);
+  const [checkLineFollowUpIsReady, setCheckLineFollowUpIsReady] = useState(
+    true
+  );
   const { expoPushToken } = useContext(UserContext);
 
   useEffect(() => {
@@ -66,31 +78,33 @@ export default function TabLineFollowUp() {
     if (!line) return;
 
     getLineFollowUp(line.id, expoPushToken);
-  }, [line]);
+  }, []);
 
   const getLineFollowUp = async (lineId: number, deviceToken: string) => {
+    setCheckLineFollowUpIsReady(false);
     SapfiApi.get<GetCompanyLineModel>("/v1/LinesFollowUp", {
       params: {
         lineId,
         deviceToken,
       },
     })
-      .then((response) =>
+      .then((response) => {
         response.status === 204
           ? setLineFollowUpExists(false)
-          : setLineFollowUpExists(true)
-      )
+          : setLineFollowUpExists(true);
+      })
       .catch((error) => {
         if (!error.response) {
           showErrorToast(error.toString());
           return;
         }
         showErrorToastFromHttpResponse(error);
-      });
+      })
+      .finally(() => setCheckLineFollowUpIsReady(true));
   };
 
   const deleteLineFollowUp = async (lineId: number, deviceToken: string) => {
-    SapfiApi.delete<GetCompanyLineModel>("/v1/LinesFollowUp", {
+    SapfiApi.delete("/v1/LinesFollowUp", {
       params: {
         lineId,
         deviceToken,
@@ -112,6 +126,7 @@ export default function TabLineFollowUp() {
   const handleDelete = () => {
     if (!line) return;
     deleteLineFollowUp(line.id, expoPushToken);
+    setShowDeleteLineFollowUpDialog(false);
   };
 
   const handleLine = (line: GetCompanyLineModel) => {
@@ -124,9 +139,13 @@ export default function TabLineFollowUp() {
     setCompanies(companies);
   };
 
-  const handleDialogVisibility = (visible: boolean) => {
-    setShowDialog(visible);
+  const handleCompanyLineNotificationDialogVisibility = (visible: boolean) => {
+    setShowCompanyLineNotificationDialog(visible);
     if (line) getLineFollowUp(line.id, expoPushToken);
+  };
+
+  const handleDeleteLineFollowUpDialogVisibility = (visible: boolean) => {
+    setShowDeleteLineFollowUpDialog(visible);
   };
 
   const handleCloseLineState = () => {
@@ -146,30 +165,46 @@ export default function TabLineFollowUp() {
                 </Text>
               </View>
               <CompanyLineState line={line} />
-              {lineFollowUpExists ? (
-                <Button
-                  block
-                  primary
-                  style={styles.baseMarginTop}
-                  onPress={() => handleDelete()}
-                >
-                  <Text>Excluir Alerta</Text>
-                </Button>
+              {!checkLineFollowUpIsReady ? (
+                <Spinner color={colors.primary} />
+              ) : lineFollowUpExists ? (
+                <>
+                  <ModalComponent
+                    handleDialogVisibility={
+                      handleDeleteLineFollowUpDialogVisibility
+                    }
+                    handleConfirm={handleDelete}
+                    title={"Excluir alerta"}
+                    description={`Deseja excluir o alerta de situação de fila?`}
+                    confirmButton={"SIM"}
+                    cancelButton={"NÃO"}
+                    visible={showDeleteLineFollowUpDialog}
+                  />
+                  <Button
+                    block
+                    primary
+                    style={styles.baseMarginTop}
+                    onPress={() => setShowDeleteLineFollowUpDialog(true)}
+                  >
+                    <Text>Excluir Alerta</Text>
+                  </Button>
+                </>
               ) : (
                 <Button
                   block
                   primary
                   style={styles.baseMarginTop}
-                  onPress={() => setShowDialog(true)}
+                  onPress={() => setShowCompanyLineNotificationDialog(true)}
                 >
                   <Text>Criar Alerta</Text>
                 </Button>
               )}
-
               <CompanyLineNotification
-                handleDialogVisibility={handleDialogVisibility}
+                handleDialogVisibility={
+                  handleCompanyLineNotificationDialogVisibility
+                }
                 lineId={line.id}
-                visible={showDialog}
+                visible={showCompanyLineNotificationDialog}
               />
               <Button
                 block
