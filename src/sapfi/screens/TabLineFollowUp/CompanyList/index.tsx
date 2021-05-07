@@ -30,7 +30,6 @@ export interface Props {
 const CompanyList: React.FC<Props> = ({ companies, handleLine }) => {
   
   const getCompanyLine = async (company: GetCompanyModel) => {
-    console.log(">>> getCompanyLine = async (company: GetCompanyModel)",company);
     SapfiApi.get<GetCompanyLineModel>("/v1/Lines", {
       params: {
         companyId: company.id

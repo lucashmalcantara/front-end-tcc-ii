@@ -39,9 +39,9 @@ export default function TabLineFollowUp() {
 
     if (line) getLineById(line.id);
 
-    console.log(
-      `TabLineFollowUp - BACKGROUND TASK ${lineStateBackgroundTaskExecutionCount} - Waited ${delayInMilliseconds}ms`
-    );
+    // console.log(
+    //   `TabLineFollowUp - BACKGROUND TASK ${lineStateBackgroundTaskExecutionCount} - Waited ${delayInMilliseconds}ms`
+    // );
 
     setLineStateBackgroundTaskExecutionCount(
       lineStateBackgroundTaskExecutionCount + 1
@@ -55,7 +55,6 @@ export default function TabLineFollowUp() {
       },
     })
       .then((response) => {
-        console.log(">>> getLineById then", response.data);
         if (!cancelLineStateBackgroundTask.current) setLine(response.data);
       })
       .catch((error) => {

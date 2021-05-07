@@ -52,9 +52,9 @@ export default function TabTicketFollowUp() {
 
     if (ticket) updateFollowUpState();
 
-    console.log(
-      `TabLineFollowUp - BACKGROUND TASK ${ticketStateBackgroundTaskExecutionCount} - Waited ${delayInMilliseconds}ms`
-    );
+    // console.log(
+    //   `TabLineFollowUp - BACKGROUND TASK ${ticketStateBackgroundTaskExecutionCount} - Waited ${delayInMilliseconds}ms`
+    // );
 
     setTicketStateBackgroundTaskExecutionCount(
       ticketStateBackgroundTaskExecutionCount + 1
@@ -130,7 +130,6 @@ export default function TabTicketFollowUp() {
   const getTicket = (ticketId: number) => {
     SapfiApi.get(`v1/Tickets/${ticketId}`)
       .then((response) => {
-        console.log(`Ticket (ID ${ticketId}) updated successfully.`);
         if (!cancelTicketStateBackgroundTask.current) setTicket(response.data);
       })
       .catch((error) => {
