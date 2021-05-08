@@ -37,7 +37,7 @@ export default function TabTicketFollowUp() {
   }, []);
 
   useEffect(() => {
-    ticketStateBackgroundTask(10000);
+    ticketStateBackgroundTask(1000);
   }, [ticketStateBackgroundTaskExecutionCount]);
 
   const ticketStateBackgroundTask = async (delayInMilliseconds: number) => {
