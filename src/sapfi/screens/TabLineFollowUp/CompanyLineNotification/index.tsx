@@ -11,56 +11,38 @@ import SapfiApi from "../../../services/Sapfi/Api";
 import { showErrorToastFromHttpResponse } from "../../../helpers/errorToastHelper";
 
 export interface Props {
-  handleDialogVisibility(visible: Boolean): void;
+  createLineFollowUp(
+    notifyWhen: number,
+    lineId: number,
+    deviceToken: string
+  ): void;
+  cancel(): void;
   visible: boolean;
   lineId: number;
 }
 
 const FollowUp: React.FC<Props> = ({
-  handleDialogVisibility: handleDialogVisibility,
+  createLineFollowUp: createLineFollowUp,
+  cancel: cancel,
   visible,
   lineId,
 }) => {
   const [notifyWhen, setNotifyWhen] = useState<string>();
   const { expoPushToken } = useContext(UserContext);
 
-  const createLineFollowUp = (
-    notifyWhen: number,
-    lineId: number,
-    deviceToken: string
-  ) => {
-    SapfiApi.post("v1/LinesFollowUp", {
-      lineId,
-      deviceToken,
-      notifyWhen,
-    })
-      .then((response) => {
-        handleDialogVisibility(false);
-        setNotifyWhen("");
-        showSuccessToast(
-          "Você será alertado quando a fila atingir a quantidade de pessoas informada!"
-        );
-      })
-      .catch((error) => {
-        if (!error.response) {
-          showErrorToast("Não foi possível criar o alerta.");
-          return;
-        }
-        showErrorToastFromHttpResponse(error);
-      });
-  };
-
   const handleConfirm = () => {
     if (!notifyWhen) {
       showWarningToast("Por favor, insira um valor válido!");
       return;
     }
-    
+
     createLineFollowUp(Number.parseInt(notifyWhen), lineId, expoPushToken);
+
+    setNotifyWhen("");
   };
 
   const handleCancel = () => {
-    handleDialogVisibility(false);
+    cancel();
     setNotifyWhen("");
   };
 
