@@ -9,6 +9,10 @@
 
 1 - Executar o comando para iniciar o build do projeto Android: `expo build:android`
 
+# Recursos
+
+[Ícone SAPFI](https://www.iconfinder.com/icons/2560355/copy_media_network_s_social_icon)
+
 # Referências
 
 ## User Interface
