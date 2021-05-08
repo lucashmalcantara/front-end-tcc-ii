@@ -17,15 +17,13 @@ import { colors } from "../../styles";
 const performDelay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export default function TabLineFollowUp() {
-  const [
-    lineStateBackgroundTaskExecutionCount,
-    setLineStateBackgroundTaskExecutionCount,
-  ] = useState(0);
-
-  const cancelLineStateBackgroundTask = useRef<boolean>();
+  const componentExecutionId = useRef<number>();
+  const currentLineId = useRef<number>();
 
   const [companies, setCompanies] = useState<GetCompanyModel[]>();
   const [line, setLine] = useState<GetCompanyLineModel>();
+  const notifyWhenRef = useRef<number>();
+
   const [
     showCompanyLineNotificationDialog,
     setShowCompanyLineNotificationDialog,
@@ -40,38 +38,33 @@ export default function TabLineFollowUp() {
   );
   const { expoPushToken } = useContext(UserContext);
 
-  useEffect(() => {
-    lineStateBackgroundTask(10000);
-  }, [lineStateBackgroundTaskExecutionCount]);
+  const backgroundTask = async () => {
+    const semaphore = componentExecutionId.current
+      ? componentExecutionId.current
+      : 0;
 
-  const lineStateBackgroundTask = async (delayInMilliseconds: number) => {
-    if (cancelLineStateBackgroundTask.current) return;
-
-    await performDelay(delayInMilliseconds);
-
-    if (line) getLineById(line.id);
-
-    setLineStateBackgroundTaskExecutionCount(
-      lineStateBackgroundTaskExecutionCount + 1
-    );
+    while (componentExecutionId.current === semaphore) {
+      if (currentLineId.current) await getLineById(currentLineId.current);
+      await performDelay(10000);
+    }
   };
 
   const getLineById = async (id: number) => {
-    SapfiApi.get<GetCompanyLineModel>("/v1/Lines", {
-      params: {
-        companyId: id,
-      },
-    })
-      .then((response) => {
-        if (!cancelLineStateBackgroundTask.current) setLine(response.data);
-      })
-      .catch((error) => {
-        if (!error.response) {
-          showErrorToast(error.toString());
-          return;
-        }
-        showErrorToastFromHttpResponse(error);
+    try {
+      const response = await SapfiApi.get<GetCompanyLineModel>("/v1/Lines", {
+        params: {
+          companyId: id,
+        },
       });
+
+      if (response.data.id === id) setLine(response.data);
+    } catch (error) {
+      if (!error.response) {
+        showErrorToast(error.toString());
+        return;
+      }
+      showErrorToastFromHttpResponse(error);
+    }
   };
 
   useEffect(() => {
@@ -79,6 +72,11 @@ export default function TabLineFollowUp() {
 
     getLineFollowUp(line.id, expoPushToken);
   }, []);
+
+  useEffect(() => {
+    if (line?.numberOfTickets === notifyWhenRef.current)
+      setLineFollowUpExists(false);
+  }, [line]);
 
   const getLineFollowUp = async (lineId: number, deviceToken: string) => {
     setCheckLineFollowUpIsReady(false);
@@ -101,6 +99,34 @@ export default function TabLineFollowUp() {
         showErrorToastFromHttpResponse(error);
       })
       .finally(() => setCheckLineFollowUpIsReady(true));
+  };
+
+  const createLineFollowUp = (
+    notifyWhen: number,
+    lineId: number,
+    deviceToken: string
+  ) => {
+    SapfiApi.post("v1/LinesFollowUp", {
+      lineId,
+      deviceToken,
+      notifyWhen,
+    })
+      .then((response) => {
+        if (line) getLineFollowUp(line.id, expoPushToken);
+        notifyWhenRef.current = notifyWhen;
+        setShowCompanyLineNotificationDialog(false);
+        showSuccessToast(
+          "Você será alertado quando a fila atingir a quantidade de pessoas informada!"
+        );
+      })
+      .catch((error) => {
+        notifyWhenRef.current = undefined;
+        if (!error.response) {
+          showErrorToast("Não foi possível criar o alerta.");
+          return;
+        }
+        showErrorToastFromHttpResponse(error);
+      });
   };
 
   const deleteLineFollowUp = async (lineId: number, deviceToken: string) => {
@@ -130,9 +156,10 @@ export default function TabLineFollowUp() {
   };
 
   const handleLine = (line: GetCompanyLineModel) => {
+    componentExecutionId.current = Math.random();
+    backgroundTask();
+    currentLineId.current = line.id;
     setLine(line);
-    setLineStateBackgroundTaskExecutionCount(0);
-    cancelLineStateBackgroundTask.current = false;
     if (line) getLineFollowUp(line.id, expoPushToken);
   };
 
@@ -140,8 +167,8 @@ export default function TabLineFollowUp() {
     setCompanies(companies);
   };
 
-  const handleCompanyLineNotificationDialogVisibility = (visible: boolean) => {
-    setShowCompanyLineNotificationDialog(visible);
+  const handleCancelLineNotificationDialog = () => {
+    setShowCompanyLineNotificationDialog(false);
     if (line) getLineFollowUp(line.id, expoPushToken);
   };
 
@@ -149,8 +176,9 @@ export default function TabLineFollowUp() {
     setShowDeleteLineFollowUpDialog(visible);
   };
 
-  const handleCloseLineState = () => {
-    cancelLineStateBackgroundTask.current = true;
+  const handleCloseLineState = async () => {
+    componentExecutionId.current = undefined;
+    currentLineId.current = undefined;
     setLine(undefined);
   };
 
@@ -201,9 +229,8 @@ export default function TabLineFollowUp() {
                 </Button>
               )}
               <CompanyLineNotification
-                handleDialogVisibility={
-                  handleCompanyLineNotificationDialogVisibility
-                }
+                createLineFollowUp={createLineFollowUp}
+                cancel={handleCancelLineNotificationDialog}
                 lineId={line.id}
                 visible={showCompanyLineNotificationDialog}
               />
