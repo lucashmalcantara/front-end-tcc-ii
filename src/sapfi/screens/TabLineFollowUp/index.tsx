@@ -45,7 +45,7 @@ export default function TabLineFollowUp() {
 
     while (componentExecutionId.current === semaphore) {
       if (currentLineId.current) await getLineById(currentLineId.current);
-      await performDelay(10000);
+      await performDelay(1000);
     }
   };
 

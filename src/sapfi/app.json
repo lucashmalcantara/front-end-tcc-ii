@@ -2,7 +2,7 @@
   "expo": {
     "name": "sapfi",
     "slug": "sapfi",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -33,7 +33,7 @@
       ],
       "package": "br.pucminas.tcc.sapfi",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

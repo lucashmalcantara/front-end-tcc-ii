@@ -5,6 +5,14 @@
 1 - [Configurar o ambiente de desenvolvimento do React Native](https://reactnative.dev/docs/environment-setup).
 2 - Instalar o Expo CLI: `npm install -g expo-cli`
 
+# Build do App
+
+1 - Executar o comando para iniciar o build do projeto Android: `expo build:android`
+
+# Recursos
+
+[Ícone SAPFI](https://www.iconfinder.com/icons/2560355/copy_media_network_s_social_icon)
+
 # Referências
 
 ## User Interface
