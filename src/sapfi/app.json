@@ -2,7 +2,7 @@
   "expo": {
     "name": "sapfi",
     "slug": "sapfi",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -27,7 +27,13 @@
         "backgroundColor": "#FFFFFF"
       },
       "useNextNotificationsApi": true,
-      "permissions": ["RECEIVE_BOOT_COMPLETED", "WAKE_LOCK"]
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "WAKE_LOCK"
+      ],
+      "package": "br.pucminas.tcc.sapfi",
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

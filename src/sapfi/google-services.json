@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1033446381888",
+    "project_id": "sapfi-cd7ce",
+    "storage_bucket": "sapfi-cd7ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033446381888:android:471bda003f45a3806182a5",
+        "android_client_info": {
+          "package_name": "br.pucminas.tcc.sapfi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033446381888-gkm5955seancfcqfl4u9nn793k10krsa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhnRmF3JbjLuS734yyocSLShlEWde2o9E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033446381888-gkm5955seancfcqfl4u9nn793k10krsa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
